@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
-* Студент: [eteries](https://up.htmlacademy.ru/ecmascript/8/user/34198).
-* Наставник: `Неизвестно`.
+* Студент: [Сергей Яньшин](https://up.htmlacademy.ru/ecmascript/8/user/34198).
+* Наставник: [Алексей Хапов](https://htmlacademy.ru/profile/id118459).
 
 ---
 
