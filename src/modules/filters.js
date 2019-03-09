@@ -1,4 +1,4 @@
-import {mountEvents} from './events';
+import {mountPoints} from './points';
 import {getRandomInteger} from './common/utils';
 import {INITIAL_EVENTS_NUMBER} from './common/constants';
 
@@ -34,6 +34,6 @@ export const mountFilter = () => {
       return;
     }
 
-    mountEvents(getRandomInteger(INITIAL_EVENTS_NUMBER));
+    mountPoints(getRandomInteger(INITIAL_EVENTS_NUMBER));
   });
 };

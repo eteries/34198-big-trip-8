@@ -1,4 +1,4 @@
-const prepareOneEventString = () => `
+const prepareOnePointString = () => `
         <article class="trip-point">
           <i class="trip-icon">🚕</i>
           <h3 class="trip-point__title">Taxi to Airport</h3>
@@ -19,17 +19,17 @@ const prepareOneEventString = () => `
 `;
 
 
-export const mountEvents = (quantity) => {
-  const events = [];
-  const eventsQuantity = Number.isInteger(quantity) ? quantity : 0;
+export const mountPoints = (quantity) => {
+  const points = [];
+  const pointsQuantity = Number.isInteger(quantity) ? quantity : 0;
 
-  for (let i = 0; i < eventsQuantity; i++) {
-    events.push(prepareOneEventString(i));
+  for (let i = 0; i < pointsQuantity; i++) {
+    points.push(prepareOnePointString(i));
   }
 
-  const eventsString = events.join(``);
+  const pointsString = points.join(``);
 
-  const eventsElement = document.querySelector(`.trip-day__items`);
-  eventsElement.innerHTML = ``;
-  eventsElement.insertAdjacentHTML(`beforeEnd`, eventsString);
+  const pointsElement = document.querySelector(`.trip-day__items`);
+  pointsElement.innerHTML = ``;
+  pointsElement.insertAdjacentHTML(`beforeEnd`, pointsString);
 };
