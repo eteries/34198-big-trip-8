@@ -1,6 +1,8 @@
 import {mountFilter} from './modules/filters';
-import {mountPoints} from './modules/points';
+import {mountTripPoints} from './modules/trip-points';
+import {mountTrip} from './modules/trip';
 import {INITIAL_EVENTS_NUMBER} from './modules/common/constants';
 
 mountFilter();
-mountPoints(INITIAL_EVENTS_NUMBER);
+mountTrip();
+mountTripPoints(INITIAL_EVENTS_NUMBER);

@@ -1,4 +1,4 @@
-import {mountPoints} from './points';
+import {mountTripPoints} from './trip-points';
 import {getRandomInteger} from './common/utils';
 import {INITIAL_EVENTS_NUMBER} from './common/constants';
 
@@ -34,6 +34,6 @@ export const mountFilter = () => {
       return;
     }
 
-    mountPoints(getRandomInteger(INITIAL_EVENTS_NUMBER));
+    mountTripPoints(getRandomInteger(INITIAL_EVENTS_NUMBER));
   });
 };
