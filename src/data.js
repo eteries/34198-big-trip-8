@@ -20,12 +20,26 @@ const LOREM_IPSUM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr
 
 const MAX_SENTENCES_IN_DESCRIPTION = 3;
 
+const MAX_DURATION_IN_MIN = 180;
+const MIN_DURATION_IN_MIN = 20;
+
+const MAX_OFFERS_NUM = 2;
+
+const PICTURES_NUM = 4;
+
+const MAX_COST = 500;
+const MIN_COST = 50;
+
+const DAY = 24 * 60 * 60 * 1000;
+
 const offers = [
   {label: `Add luggage`, cost: 25},
   {label: `Switch to comfort class`, cost: 50},
   {label: `Add meal`, cost: 15},
   {label: `Choose seats`, cost: 15}
 ];
+
+const getRandomRecentDate = () => Date.now() - DAY + Math.floor(Math.random() * DAY);
 
 export const getTrip = () => ({
   id: 1,
@@ -39,13 +53,15 @@ export const getTripPoint = () => (
     type: tripPointTypes[getRandomInteger(tripPointTypes.length - 1)],
     title: tripPointsTitles[getRandomInteger(tripPointsTitles.length - 1)],
     destination: cities[getRandomInteger(cities.length - 1)],
-    dateStart: 12345,
-    dateEnd: 123456,
-    offers: spliceRandom(offers, 2),
-    cost: getRandomInteger(500) + 50
+    dateStart: getRandomRecentDate(),
+    duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
+    offers: spliceRandom(offers, MAX_OFFERS_NUM),
+    cost: getRandomInteger(MAX_COST) + MIN_COST
   }
 );
 
 export const getCityDescription = (cityName) => {
   return `${cityName} is ${extractRandomSentences(LOREM_IPSUM, MAX_SENTENCES_IN_DESCRIPTION)}`;
 };
+
+export const collectPictures = () => new Array(PICTURES_NUM).map(() => `http://picsum.photos/300/150?r=${Math.random()}`);

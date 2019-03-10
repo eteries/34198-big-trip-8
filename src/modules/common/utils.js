@@ -21,17 +21,26 @@ export const joinElements = (cb, data) => {
     .join(``);
 };
 
-export const getDuration = (dateStart, dateEnd) => {
-  const duration = dateEnd - dateStart;
-  if (duration < 0) {
-    return ``;
-  }
-  const hours = Math.floor(duration / (60 * 60));
-  let minutes = Math.floor((duration % (60 * 60)) / 60);
+export const formatDuration = (interval) => {
+  const intervalInMinutes = interval / (1000 * 60);
+
+  const hours = Math.floor(intervalInMinutes / 60);
+  let minutes = Math.floor(intervalInMinutes % 60);
 
   if (minutes < 10) {
     minutes = `0` + minutes;
   }
 
-  return `${hours}h : ${minutes}m`;
+  return `${hours}h ${minutes}m`;
+};
+
+export const formatTime = (date) => {
+  const hours = new Date(date).getHours();
+  let minutes = new Date(date).getMinutes();
+
+  if (minutes < 10) {
+    minutes = `0` + minutes;
+  }
+
+  return `${hours}:${minutes}`;
 };

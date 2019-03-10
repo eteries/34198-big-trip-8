@@ -1,5 +1,5 @@
 import {prepareOfferString} from './offers';
-import {getDuration, joinElements} from './common/utils';
+import {formatDuration, formatTime, joinElements} from './common/utils';
 import {prepareIconString} from './icons';
 import {getTripPoint} from '../data';
 
@@ -8,8 +8,11 @@ const prepareOneTripPointString = (tripPoint) => `
           <i class="trip-icon">${prepareIconString(tripPoint.type)}</i>
           <h3 class="trip-point__title">${tripPoint.title}</h3>
           <p class="trip-point__schedule">
-            <span class="trip-point__timetable">${tripPoint.dateStart}&nbsp;&mdash; ${tripPoint.dateEnd}</span>
-            <span class="trip-point__duration">${getDuration(tripPoint.dateStart, tripPoint.dateEnd)}</span>
+            <span class="trip-point__timetable">
+              ${formatTime(tripPoint.dateStart)}&nbsp;&mdash; 
+              ${formatTime(tripPoint.dateStart + tripPoint.duration)}
+            </span>
+            <span class="trip-point__duration">${formatDuration(tripPoint.duration)}</span>
           </p>
           <p class="trip-point__price">&euro;&nbsp;${tripPoint.cost}</p>
           <ul class="trip-point__offers">
