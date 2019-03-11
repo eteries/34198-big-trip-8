@@ -1,10 +1,11 @@
 export const getRandomInteger = (max) => Math.round(Math.random() * max);
 
 const shuffle = (arr) => {
-  for (let i = arr.length - 1; i > 0; i--) {
+  arr.forEach((item, i) => {
     const j = getRandomInteger(i + 1);
     [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
+  });
+
   return arr;
 };
 
