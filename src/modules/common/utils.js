@@ -45,3 +45,9 @@ export const formatTime = (date) => {
 
   return `${hours}:${minutes}`;
 };
+
+export const createElement = (templateString) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = templateString.trim();
+  return newElement.firstChild;
+};
