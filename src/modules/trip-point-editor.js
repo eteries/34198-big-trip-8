@@ -1,14 +1,18 @@
-import {createElement, formatDuration, formatTime, joinElements} from './common/utils';
+import {createElement, formatDuration, formatTime} from './common/utils';
 import {prepareIconString} from './icons';
-import {prepareOfferString} from './offers';
+import {collectPictures, getCityDescription, tripPointTypes} from '../data';
 
 export class TripPointEditor {
   constructor(tripPoint) {
     this._type = tripPoint.type;
-    this._dateStart = tripPoint.type;
+    this._dateStart = tripPoint.dateStart;
+    this._title = tripPoint.title;
     this._duration = tripPoint.duration;
     this._cost = tripPoint.cost;
     this._offers = tripPoint.offers;
+    this._groupedTypes = [[], []];
+
+    this._onClick = null;
 
     this._element = null;
   }
@@ -17,7 +21,7 @@ export class TripPointEditor {
     if (this._element) {
       this.destroy();
     }
-
+    this._groupTripTypes(tripPointTypes);
     this._element = createElement(this.template);
     this._appendChildren();
     this.attachEventListeners();
@@ -41,6 +45,22 @@ export class TripPointEditor {
     //
   }
 
+  _groupTripTypes(types) {
+    return types.reduce((acc, type) =>
+      (type === `sightseeing` || type === `checkIn`) ?
+        this._groupedTypes[1].push(type) :
+        this._groupedTypes[0].push(type),
+    this._groupedTypes);
+  }
+
+  set onClick(fn) {
+    this._onClick = fn;
+  }
+
+  get element() {
+    return this._element;
+  }
+
   get template() {
     return `
       <article class="point">
@@ -56,8 +76,16 @@ export class TripPointEditor {
       
               <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
       
-              <div class="travel-way__select">
-                <div class="travel-way__select-group">
+              <div class="travel-way__select">    
+                  ${this._groupedTypes.map((group) => `
+                    <div class="travel-way__select-group">
+                      ${group.map((type) => `
+                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="travel-way" value="${type}">
+                        <label class="travel-way__select-label" for="travel-way-taxi">${prepareIconString(type)} ${type}</label>
+                      `).join(``)}
+                    </div>
+                  `).join(``)}
+<!--
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-taxi" name="travel-way" value="taxi">
                   <label class="travel-way__select-label" for="travel-way-taxi">🚕 taxi</label>
       
@@ -69,14 +97,14 @@ export class TripPointEditor {
       
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-flight" name="travel-way" value="train" checked>
                   <label class="travel-way__select-label" for="travel-way-flight">✈️ flight</label>
-                </div>
+-->
       
-                <div class="travel-way__select-group">
+                <!--<div class="travel-way__select-group">
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-check-in" name="travel-way" value="check-in">
                   <label class="travel-way__select-label" for="travel-way-check-in">🏨 check-in</label>
       
                   <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-sightseeing" name="travel-way" value="sight-seeing">
-                  <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>
+                  <label class="travel-way__select-label" for="travel-way-sightseeing">🏛 sightseeing</label>-->
                 </div>
               </div>
             </div>
@@ -143,13 +171,11 @@ export class TripPointEditor {
             </section>
             <section class="point__destination">
               <h3 class="point__details-title">Destination</h3>
-              <p class="point__destination-text">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+              <p class="point__destination-text">${getCityDescription(this._title)}</p>
               <div class="point__destination-images">
-                <img src="http://picsum.photos/330/140?r=123" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/200?r=1234" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/300/100?r=12345" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/200/300?r=123456" alt="picture from place" class="point__destination-image">
-                <img src="http://picsum.photos/100/300?r=1234567" alt="picture from place" class="point__destination-image">
+                ${collectPictures().map((src) => `
+                  <img src="${src}" alt="picture from place" class="point__destination-image">
+                `).join(``)}
               </div>
             </section>
             <input type="hidden" class="point__total-price" name="total-price" value="">

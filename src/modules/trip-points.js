@@ -1,7 +1,5 @@
-import {prepareOfferString} from './offers';
-import {createElement, formatDuration, formatTime, joinElements} from './common/utils';
-import {prepareIconString} from './icons';
-import {getTripPoint, getTripPoints} from '../data';
+import {createElement} from './common/utils';
+import {getTripPoints} from '../data';
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
 
@@ -41,10 +39,22 @@ export class TripPoints {
 
   _addPoint(point) {
     const tripPointComponent = new TripPoint(point);
-    // const tripPointEditorComponent = new TripPointEditor(task);
+    const tripPointEditorComponent = new TripPointEditor(point);
 
     const container = this._element.querySelector(`.trip-day__items`);
     container.appendChild(tripPointComponent.create());
+
+    tripPointComponent.onClick = () => {
+      tripPointEditorComponent.create();
+      container.replaceChild(tripPointEditorComponent.element, tripPointComponent.element);
+      tripPointComponent.destroy();
+    };
+
+    tripPointEditorComponent.onSubmit = () => {
+      tripPointComponent.create();
+      container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
+      tripPointEditorComponent.destroy();
+    };
   }
 
   get template() {
@@ -57,8 +67,7 @@ export class TripPoints {
             <h2 class="trip-day__title">Mar 18</h2>
           </article>
     
-          <div class="trip-day__items">
-          </div>
+          <div class="trip-day__items"></div>
         </section>
       </section>
     `;

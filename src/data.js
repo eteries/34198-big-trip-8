@@ -1,6 +1,6 @@
 import {extractRandomSentences, getRandomInteger, spliceRandom} from './modules/common/utils';
 
-const tripPointTypes = [
+export const tripPointTypes = [
   `taxi`,
   `bus`,
   `ship`,
@@ -67,7 +67,7 @@ export const getCityDescription = (cityName) => {
   return `${cityName} is ${extractRandomSentences(LOREM_IPSUM, MAX_SENTENCES_IN_DESCRIPTION)}`;
 };
 
-export const collectPictures = () => new Array(PICTURES_NUM).map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
+export const collectPictures = () => new Array(PICTURES_NUM).fill(``).map(() => `http://picsum.photos/300/150?r=${Math.random()}`);
 
 export const getTripPoints = () => {
   return new Array(getRandomInteger(INITIAL_EVENTS_NUMBER) + MIN_EVENTS_NUMBER).fill(``).map(() => getTripPoint());

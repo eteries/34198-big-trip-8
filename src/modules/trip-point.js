@@ -1,17 +1,24 @@
 import {prepareIconString} from './icons';
-import {createElement, formatDuration, formatTime, joinElements} from './common/utils';
-import {prepareOfferString} from './offers';
+import {createElement, formatDuration, formatTime} from './common/utils';
 
 export class TripPoint {
   constructor(tripPoint) {
     this._type = tripPoint.type;
     this._title = tripPoint.title;
-    this._dateStart = tripPoint.type;
+    this._dateStart = tripPoint.dateStart;
     this._duration = tripPoint.duration;
     this._cost = tripPoint.cost;
     this._offers = tripPoint.offers;
 
+    this._onClick = null;
+
     this._element = null;
+
+    this._onElementClick = () => {
+      if (typeof this._onClick === `function`) {
+        this._onClick();
+      }
+    };
   }
 
   create() {
@@ -31,7 +38,7 @@ export class TripPoint {
   }
 
   attachEventListeners() {
-    //
+    this._element.addEventListener(`click`, this._onElementClick);
   }
 
   detachEventListeners() {
@@ -40,6 +47,14 @@ export class TripPoint {
 
   _appendChildren() {
     //
+  }
+
+  set onClick(fn) {
+    this._onClick = fn;
+  }
+
+  get element() {
+    return this._element;
   }
 
   get template() {
@@ -56,7 +71,12 @@ export class TripPoint {
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._cost}</p>
         <ul class="trip-point__offers">
-          ${joinElements(prepareOfferString, this._offers)}
+          ${this._offers
+          .map((offer) => `
+            <li>
+                <button class="trip-point__offer">${offer.label} +&euro;&nbsp;${offer.cost}</button>
+            </li>`)
+          .join(``)}
         </ul>
       </article>`;
   }
