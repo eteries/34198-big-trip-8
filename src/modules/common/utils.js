@@ -13,15 +13,6 @@ export const spliceRandom = (arr, max) => shuffle([...arr]).splice(0, 1 + getRan
 
 export const extractRandomSentences = (text, max) => spliceRandom(text.split(`. `), max).join(` .`);
 
-export const joinElements = (cb, data) => {
-  if (!data.length) {
-    return ``;
-  }
-  return [...data]
-    .map((item) => cb(item))
-    .join(``);
-};
-
 export const formatDuration = (interval) => {
   const intervalInMinutes = interval / (1000 * 60);
 
@@ -44,4 +35,10 @@ export const formatTime = (date) => {
   }
 
   return `${hours}:${minutes}`;
+};
+
+export const createElement = (templateString) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = templateString.trim();
+  return newElement.firstChild;
 };

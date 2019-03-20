@@ -1,39 +1,42 @@
-import {mountTripPoints} from './trip-points';
-import {getRandomInteger} from './common/utils';
-import {INITIAL_EVENTS_NUMBER} from './common/constants';
+import {createElement} from './common/utils';
 
 const filters = [`everything`, `future`, `past`];
 
-const filtersElement = document.querySelector(`.trip-filter`);
+export class Filters {
+  constructor() {
+    this._element = null;
+  }
 
-const prepareOneFilterString = (label, index) => `
-    <input type="radio" 
-           id="filter-${label}"
-           name="filter"
-           value="${label}"
-           ${index === 0 ? `checked` : ``}
-    />
-    <label class="trip-filter__item"
-           for="filter-${label}">
-        ${label}
-    </label>
-`;
-
-const filtersString = filters
-  .map((filter, index) => prepareOneFilterString(filter, index))
-  .join(``);
-
-export const mountFilter = () => {
-  filtersElement.innerHTML = ``;
-  filtersElement.insertAdjacentHTML(`beforeEnd`, filtersString);
-
-  filtersElement.addEventListener(`click`, (event) => {
-    if (!event.target ||
-      event.target.tagName !== `LABEL` ||
-      event.target.control.checked) {
-      return;
+  create() {
+    if (this._element) {
+      this.destroy();
     }
 
-    mountTripPoints(getRandomInteger(INITIAL_EVENTS_NUMBER));
-  });
-};
+    this._element = createElement(this.template);
+    return this._element;
+  }
+
+  destroy() {
+    this._element = null;
+  }
+
+  get template() {
+    return `
+    <div class="trip-filter">
+      ${filters
+        .map((filter, index) => `
+          <input type="radio" 
+              id="filter-${filter}"
+              name="filter"
+              value="${filter}"
+         ${index === 0 ? `checked` : ``}
+        />
+        <label class="trip-filter__item"
+               for="filter-${filter}">
+            ${filter}
+        </label>`)
+        .join(``)}
+    </div>
+      `;
+  }
+}
