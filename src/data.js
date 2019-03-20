@@ -14,8 +14,6 @@ export const tripPointTypes = [
 
 export const cities = [`Amsterdam`, `Geneva`, `Chamonix`];
 
-export const places = [`hotel`, `restaurant`, `sightseeing`];
-
 const tripPointsTitles = [`Taxi to Airport`, `Flight to Geneva`, `Drive to Chamonix`, `Check into a hotel`];
 
 export const INITIAL_EVENTS_NUMBER = 7;
