@@ -1,12 +1,17 @@
-import {mountFilter} from './modules/filters';
-import {mountTripPoints, TripPoints} from './modules/trip-points';
-import {mountTrip} from './modules/trip';
-import {INITIAL_EVENTS_NUMBER} from './modules/common/constants';
+import {Filters} from './modules/filters';
+import {Trip} from './modules/trip';
+import {getTrip} from './data';
+import {Controls} from './modules/controls';
+import {Sorting} from './modules/sorting';
 
-mountFilter();
-mountTrip();
-// mountTripPoints(INITIAL_EVENTS_NUMBER);
+const sorting = new Sorting();
+document.querySelector(`#table`).appendChild(sorting.create());
 
-const tripPoints = new TripPoints();
-document.querySelector(`.main`).appendChild(tripPoints.create());
+const trip = new Trip(getTrip());
+document.querySelector(`.header__wrap`).appendChild(trip.create());
 
+const controls = new Controls();
+document.querySelector(`.header__wrap`).appendChild(controls.create());
+
+const filters = new Filters();
+document.querySelector(`.header__wrap`).appendChild(filters.create());

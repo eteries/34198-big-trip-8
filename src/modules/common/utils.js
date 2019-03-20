@@ -13,15 +13,6 @@ export const spliceRandom = (arr, max) => shuffle([...arr]).splice(0, 1 + getRan
 
 export const extractRandomSentences = (text, max) => spliceRandom(text.split(`. `), max).join(` .`);
 
-export const joinElements = (cb, data) => {
-  if (!data.length) {
-    return ``;
-  }
-  return [...data]
-    .map((item) => cb(item))
-    .join(``);
-};
-
 export const formatDuration = (interval) => {
   const intervalInMinutes = interval / (1000 * 60);
 

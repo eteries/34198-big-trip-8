@@ -1,5 +1,5 @@
 const icons = {
-  trip: `⛰`,
+  trip: `🚗`,
   taxi: `🚕`,
   bus: `🚌`,
   train: `🚂`,

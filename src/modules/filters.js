@@ -1,39 +1,61 @@
-import {mountTripPoints} from './trip-points';
-import {getRandomInteger} from './common/utils';
-import {INITIAL_EVENTS_NUMBER} from './common/constants';
+import {createElement} from './common/utils';
 
 const filters = [`everything`, `future`, `past`];
 
-const filtersElement = document.querySelector(`.trip-filter`);
+export class Filters {
+  constructor() {
+    this._element = null;
+  }
 
-const prepareOneFilterString = (label, index) => `
-    <input type="radio" 
-           id="filter-${label}"
-           name="filter"
-           value="${label}"
-           ${index === 0 ? `checked` : ``}
-    />
-    <label class="trip-filter__item"
-           for="filter-${label}">
-        ${label}
-    </label>
-`;
+  create() {
+    if (this._element) {
+      this.destroy();
+    }
 
-const filtersString = filters
-  .map((filter, index) => prepareOneFilterString(filter, index))
-  .join(``);
+    this._element = createElement(this.template);
+    this.attachEventListeners();
+    return this._element;
+  }
 
-export const mountFilter = () => {
-  filtersElement.innerHTML = ``;
-  filtersElement.insertAdjacentHTML(`beforeEnd`, filtersString);
+  destroy() {
+    this._element = null;
+    this.detachEventListeners();
+  }
 
-  filtersElement.addEventListener(`click`, (event) => {
+  get template() {
+    return `
+    <div class="trip-filter">
+      ${filters
+        .map((filter, index) => `
+          <input type="radio" 
+              id="filter-${filter}"
+              name="filter"
+              value="${filter}"
+         ${index === 0 ? `checked` : ``}
+        />
+        <label class="trip-filter__item"
+               for="filter-${filter}">
+            ${filter}
+        </label>`)
+        .join(``)}
+    </div>
+      `;
+  }
+
+  attachEventListeners() {
+    this._element.addEventListener(`click`, this._emitFilterEvent);
+  }
+
+  detachEventListeners() {
+    this._element.removeEventListener(`click`, this._emitFilterEvent);
+  }
+
+  _emitFilterEvent(event) {
     if (!event.target ||
       event.target.tagName !== `LABEL` ||
       event.target.control.checked) {
       return;
     }
-
-    mountTripPoints(getRandomInteger(INITIAL_EVENTS_NUMBER));
-  });
-};
+    this._element.dispatchEvent(new Event(`filter`));
+  }
+}

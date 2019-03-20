@@ -27,7 +27,6 @@ export class TripPoint {
     }
 
     this._element = createElement(this.template);
-    this._appendChildren();
     this.attachEventListeners();
     return this._element;
   }
@@ -42,11 +41,7 @@ export class TripPoint {
   }
 
   detachEventListeners() {
-    //
-  }
-
-  _appendChildren() {
-    //
+    this._element.removeEventListener(`click`, this._onElementClick);
   }
 
   set onClick(fn) {

@@ -1,18 +1,20 @@
 import {extractRandomSentences, getRandomInteger, spliceRandom} from './modules/common/utils';
 
 export const tripPointTypes = [
-  `taxi`,
-  `bus`,
-  `ship`,
-  `transport`,
-  `drive`,
-  `flight`,
-  `checkIn`,
-  `sightseeing`,
-  `restaurant`
+  [`taxi`,
+    `bus`,
+    `ship`,
+    `transport`,
+    `drive`,
+    `flight`],
+  [`checkIn`,
+    `sightseeing`,
+    `restaurant`]
 ];
 
-const cities = [`Amsterdam`, `Geneva`, `Chamonix`];
+export const cities = [`Amsterdam`, `Geneva`, `Chamonix`];
+
+export const places = [`hotel`, `restaurant`, `sightseeing`];
 
 const tripPointsTitles = [`Taxi to Airport`, `Flight to Geneva`, `Drive to Chamonix`, `Check into a hotel`];
 
@@ -30,12 +32,14 @@ const MAX_OFFERS_NUM = 2;
 
 const PICTURES_NUM = 4;
 
+const POINT_TYPES_NUMBER = 2;
+
 const MAX_COST = 500;
 const MIN_COST = 50;
 
 const DAY = 24 * 60 * 60 * 1000;
 
-const offers = [
+export const offers = [
   {label: `Add luggage`, cost: 25},
   {label: `Switch to comfort class`, cost: 50},
   {label: `Add meal`, cost: 15},
@@ -43,6 +47,11 @@ const offers = [
 ];
 
 const getRandomRecentDate = () => Date.now() - DAY + Math.floor(Math.random() * DAY);
+
+const getRandomPointType = () => {
+  const group = tripPointTypes[getRandomInteger(POINT_TYPES_NUMBER - 1)];
+  return group[getRandomInteger(group.length - 1)];
+};
 
 export const getTrip = () => ({
   id: 1,
@@ -53,13 +62,14 @@ export const getTrip = () => ({
 
 export const getTripPoint = () => (
   {
-    type: tripPointTypes[getRandomInteger(tripPointTypes.length - 1)],
+    type: getRandomPointType(),
     title: tripPointsTitles[getRandomInteger(tripPointsTitles.length - 1)],
     destination: cities[getRandomInteger(cities.length - 1)],
     dateStart: getRandomRecentDate(),
     duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
     offers: spliceRandom(offers, MAX_OFFERS_NUM),
-    cost: getRandomInteger(MAX_COST) + MIN_COST
+    cost: getRandomInteger(MAX_COST) + MIN_COST,
+    isFavorite: false
   }
 );
 
