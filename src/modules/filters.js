@@ -13,13 +13,11 @@ export class Filters {
     }
 
     this._element = createElement(this.template);
-    this.attachEventListeners();
     return this._element;
   }
 
   destroy() {
     this._element = null;
-    this.detachEventListeners();
   }
 
   get template() {
@@ -40,22 +38,5 @@ export class Filters {
         .join(``)}
     </div>
       `;
-  }
-
-  attachEventListeners() {
-    this._element.addEventListener(`click`, this._emitFilterEvent);
-  }
-
-  detachEventListeners() {
-    this._element.removeEventListener(`click`, this._emitFilterEvent);
-  }
-
-  _emitFilterEvent(event) {
-    if (!event.target ||
-      event.target.tagName !== `LABEL` ||
-      event.target.control.checked) {
-      return;
-    }
-    this.dispatchEvent(new Event(`filter`));
   }
 }

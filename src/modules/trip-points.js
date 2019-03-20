@@ -31,12 +31,12 @@ export class TripPoints {
 
   _attachEventListeners() {
     document.querySelector(`.trip-filter`)
-      .addEventListener(`filter`, this._onFilter);
+      .addEventListener(`change`, this._onFilter);
   }
 
   _detachEventListeners() {
     document.querySelector(`.trip-filter`)
-      .removeEventListener(`filter`, this._onFilter);
+      .removeEventListener(`change`, this._onFilter);
   }
 
   _appendChildren() {
