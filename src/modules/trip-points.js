@@ -6,6 +6,10 @@ import {TripPointEditor} from './trip-point-editor';
 export class TripPoints {
   constructor() {
     this._element = null;
+
+    this._onFilter = () => {
+      this._filterPoints();
+    };
   }
 
   create() {
@@ -14,12 +18,25 @@ export class TripPoints {
     }
 
     this._element = createElement(this.template);
+    this._attachEventListeners();
     this._appendChildren();
     return this._element;
   }
 
   destroy() {
+    this._detachEventListeners();
+    this._element.parentNode.removeChild(this._element);
     this._element = null;
+  }
+
+  _attachEventListeners() {
+    document.querySelector(`.trip-filter`)
+      .addEventListener(`filter`, this._onFilter);
+  }
+
+  _detachEventListeners() {
+    document.querySelector(`.trip-filter`)
+      .removeEventListener(`filter`, this._onFilter);
   }
 
   _appendChildren() {
@@ -44,6 +61,11 @@ export class TripPoints {
       container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
       tripPointEditorComponent.destroy();
     };
+  }
+
+  _filterPoints() {
+    this.destroy();
+    document.querySelector(`.main`).appendChild(this.create());
   }
 
   get template() {

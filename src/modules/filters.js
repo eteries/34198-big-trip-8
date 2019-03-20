@@ -56,6 +56,6 @@ export class Filters {
       event.target.control.checked) {
       return;
     }
-    this._element.dispatchEvent(new Event(`filter`));
+    this.dispatchEvent(new Event(`filter`));
   }
 }
