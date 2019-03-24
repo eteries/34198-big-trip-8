@@ -1,40 +1,23 @@
-import {createElement} from './common/utils';
 import {getTripPoints} from '../data';
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
+import {Component} from './common/component';
 
-export class TripPoints {
+export class TripPoints extends Component {
   constructor() {
-    this._element = null;
+    super();
 
     this._onFilter = () => {
       this._filterPoints();
     };
   }
 
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-
-    this._element = createElement(this.template);
-    this._attachEventListeners();
-    this._appendChildren();
-    return this._element;
-  }
-
-  destroy() {
-    this._detachEventListeners();
-    this._element.parentNode.removeChild(this._element);
-    this._element = null;
-  }
-
-  _attachEventListeners() {
+  attachEventListeners() {
     document.querySelector(`.trip-filter`)
       .addEventListener(`change`, this._onFilter);
   }
 
-  _detachEventListeners() {
+  detachEventListeners() {
     document.querySelector(`.trip-filter`)
       .removeEventListener(`change`, this._onFilter);
   }

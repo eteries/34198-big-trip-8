@@ -1,8 +1,11 @@
 import {prepareIconString} from './icons';
-import {createElement, formatDuration, formatTime} from './common/utils';
+import {formatDuration, formatTime} from './common/utils';
+import {Component} from './common/component';
 
-export class TripPoint {
+export class TripPoint extends Component {
   constructor(tripPoint) {
+    super();
+
     this._type = tripPoint.type;
     this._title = tripPoint.title;
     this._dateStart = tripPoint.dateStart;
@@ -12,28 +15,11 @@ export class TripPoint {
 
     this._onClick = null;
 
-    this._element = null;
-
     this._onElementClick = () => {
       if (typeof this._onClick === `function`) {
         this._onClick();
       }
     };
-  }
-
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-
-    this._element = createElement(this.template);
-    this.attachEventListeners();
-    return this._element;
-  }
-
-  destroy() {
-    this.detachEventListeners();
-    this._element = null;
   }
 
   attachEventListeners() {
@@ -46,10 +32,6 @@ export class TripPoint {
 
   set onClick(fn) {
     this._onClick = fn;
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {

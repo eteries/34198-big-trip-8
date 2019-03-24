@@ -1,23 +1,10 @@
-import {createElement} from './common/utils';
+import {Component} from './common/component';
 
 const filters = [`everything`, `future`, `past`];
 
-export class Filters {
+export class Filters extends Component {
   constructor() {
-    this._element = null;
-  }
-
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-
-    this._element = createElement(this.template);
-    return this._element;
-  }
-
-  destroy() {
-    this._element = null;
+    super();
   }
 
   get template() {
