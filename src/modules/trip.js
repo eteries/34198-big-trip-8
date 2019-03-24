@@ -1,9 +1,11 @@
 import {prepareIconString} from './icons';
 import {TripPoints} from './trip-points';
-import {createElement} from './common/utils';
+import {Component} from './common/component';
 
-export class Trip {
+export class Trip extends Component {
   constructor(trip) {
+    super();
+
     this._title = trip.title;
     this._dates = trip.dates;
     this._cost = trip.cost;
@@ -11,27 +13,9 @@ export class Trip {
     this._element = null;
   }
 
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-
-    this._element = createElement(this.template);
-    this._appendChildren();
-    return this._element;
-  }
-
-  destroy() {
-    this._element = null;
-  }
-
   _appendChildren() {
     const tripPoints = new TripPoints();
     document.querySelector(`.main`).appendChild(tripPoints.create());
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {

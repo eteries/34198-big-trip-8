@@ -1,25 +1,8 @@
-import {createElement} from './common/utils';
+import {Component} from './common/component';
 
-export class Controls {
+export class Controls extends Component {
   constructor() {
-    this._element = null;
-  }
-
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-
-    this._element = createElement(this.template);
-    return this._element;
-  }
-
-  destroy() {
-    this._element = null;
-  }
-
-  get element() {
-    return this._element;
+    super();
   }
 
   get template() {

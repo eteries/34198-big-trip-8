@@ -1,9 +1,12 @@
-import {createElement, formatTime} from './common/utils';
+import {formatTime} from './common/utils';
 import {prepareIconString} from './icons';
 import {collectPictures, getCityDescription, tripPointTypes} from '../data';
+import {Component} from './common/component';
 
-export class TripPointEditor {
+export class TripPointEditor extends Component {
   constructor(tripPoint) {
+    super();
+
     this._dateStart = tripPoint.dateStart;
     this._destination = tripPoint.destination;
     this._duration = tripPoint.duration;
@@ -20,20 +23,6 @@ export class TripPointEditor {
     };
   }
 
-  create() {
-    if (this._element) {
-      this.destroy();
-    }
-    this._element = createElement(this.template);
-    this.attachEventListeners();
-    return this._element;
-  }
-
-  destroy() {
-    this.detachEventListeners();
-    this._element = null;
-  }
-
   attachEventListeners() {
     this._element.querySelector(`.point__button--save`)
       .addEventListener(`click`, this._onSaveBtnClick);
@@ -46,10 +35,6 @@ export class TripPointEditor {
 
   set onSubmit(fn) {
     this._onSubmit = fn;
-  }
-
-  get element() {
-    return this._element;
   }
 
   get template() {
