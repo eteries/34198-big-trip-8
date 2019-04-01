@@ -34,6 +34,16 @@ export class TripPoint extends Component {
     this._onClick = fn;
   }
 
+  update(data) {
+    this._type = data.type;
+    this._destination = data.destination;
+    this._offers = data.offers;
+    this._dateStart = data.dateStart;
+    this._dateEnd = data.dateEnd;
+    this._duration = data.duration;
+    this._cost = data.cost;
+  }
+
   get template() {
     return `
       <article class="trip-point">

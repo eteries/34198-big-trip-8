@@ -22,7 +22,7 @@ export class TripPoints extends Component {
       .removeEventListener(`change`, this._onFilter);
   }
 
-  _appendChildren() {
+  appendChildren() {
     getTripPoints().forEach((item) => this._addPoint(item));
   }
 
@@ -39,7 +39,17 @@ export class TripPoints extends Component {
       tripPointComponent.destroy();
     };
 
-    tripPointEditorComponent.onSubmit = () => {
+    tripPointEditorComponent.onSubmit = (newTripPoint) => {
+      point.type = newTripPoint.type;
+      point.destination = newTripPoint.destination;
+      point.offers = newTripPoint.offers;
+      point.dateStart = newTripPoint.dateStart;
+      point.dateEnd = newTripPoint.dateEnd;
+      point.duration = newTripPoint.duration;
+      point.cost = newTripPoint.cost;
+
+      tripPointComponent.update(point);
+
       tripPointComponent.create();
       container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
       tripPointEditorComponent.destroy();

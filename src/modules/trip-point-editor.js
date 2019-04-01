@@ -1,7 +1,10 @@
-import {formatTime} from './common/utils';
+import {formatTime, getRandomInteger, spliceRandom} from './common/utils';
 import {prepareIconString} from './icons';
-import {collectPictures, getCityDescription, tripPointTypes} from '../data';
+import {cities, collectPictures, getCityDescription, offers, tripPointTypes} from '../data';
 import {Component} from './common/component';
+
+import flatpickr from 'flatpickr';
+import moment from 'moment';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -10,22 +13,47 @@ export class TripPointEditor extends Component {
     this._dateStart = tripPoint.dateStart;
     this._destination = tripPoint.destination;
     this._duration = tripPoint.duration;
+    this._cost = tripPoint.cost;
 
     this._onSubmit = null;
 
-    this._element = null;
-
     this._onSaveBtnClick = (event) => {
       event.preventDefault();
+
+      const formData = new FormData(this._element.querySelector(`form`));
+      debugger
+      const newData = this._processForm(formData);
+
       if (typeof this._onSubmit === `function`) {
-        this._onSubmit();
+        this._onSubmit(newData);
       }
+
+      this.update(newData);
     };
   }
 
   attachEventListeners() {
     this._element.querySelector(`.point__button--save`)
       .addEventListener(`click`, this._onSaveBtnClick);
+
+    flatpickr(
+        this._element.querySelector(`[name="time"]`),
+        {
+          altInput: true,
+          enableTime: true,
+          altFormat: `H:i`,
+          dateFormat: `j F`,
+          defaultDate: this._dateStart || new Date(),
+          mode: `range`,
+          locale: {
+            rangeSeparator: ` — `
+          }
+        }
+    );/*
+    flatpickr(
+        this._element.querySelector(`.card__time`),
+        {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`, defaultDate: this._dueDate || new Date()}
+    );*/
   }
 
   detachEventListeners() {
@@ -36,6 +64,87 @@ export class TripPointEditor extends Component {
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
+
+  /*_onChangeDate() {
+    this._state.isDate = !this._state.isDate;
+    this.removeListeners();
+    this._partialUpdate();
+    this.createListeners();
+  }
+
+  _onChangeRepeated() {
+    this._state.isRepeated = !this._state.isRepeated;
+    this.removeListeners();
+    this._partialUpdate();
+    this.createListeners();
+  }*/
+
+  _partialUpdate() {
+    this._element.innerHTML = this.template;
+    this.appendChildren();
+  }
+
+  _processForm(formData) {
+    const entry = {
+      type: ``,
+      title: ``,
+      destination: ``,
+      dateStart: ``,
+      duration: 0,
+      offers: [],
+      cost: 0,
+      isFavorite: false
+    };
+
+    const taskEditMapper = TripPointEditor.createMapper(entry);
+
+    for (const pair of formData.entries()) {
+      const [property, value] = pair;
+
+      if (taskEditMapper[property]) {
+        taskEditMapper[property](value);
+      }
+    }
+
+    return entry;
+  }
+
+  update(data) {
+    this._type = data.type;
+    this._destination = data.destination;
+    this._offers = data.offers;
+    this._dateStart = data.dateStart;
+    this._dateEnd = data.dateEnd;
+    this._duration = data.duration;
+    this._cost = data.cost;
+  }
+
+  static createMapper(target) {
+    return {
+      type: (value) => target.type = value,
+      destination: (value) => {
+        target.destination = value;
+      },
+      offer: (value) => {
+        console.log(value)
+        value.trim() && target.offers.push(value)
+      },
+      price: (value) => {
+        target.cost = value;
+      },
+      time: (value) => {
+        console.log(value)
+        target.dateStart = value;
+      }
+    };
+  }
+
+/*  time: (value) => {
+    const newDate = moment(target.dueDate, `DD MMMM`);
+    newDate.set(`hours`, (moment(value, `h:mm`).hours()));
+    newDate.set(`minutes`, (moment(value, `h:mm`).minutes()));
+    target.dueDate = newDate.valueOf();
+  }*/
 
   get template() {
     return `
@@ -56,7 +165,7 @@ export class TripPointEditor extends Component {
                   ${tripPointTypes.map((group) => `
                     <div class="travel-way__select-group">
                       ${group.map((type) => `
-                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="travel-way" value="${type}">
+                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}">
                         <label class="travel-way__select-label" for="travel-way-taxi">${prepareIconString(type)} ${type}</label>
                       `).join(``)}
                     </div>
@@ -88,7 +197,7 @@ export class TripPointEditor extends Component {
             <label class="point__price">
               write price
               <span class="point__price-currency">€</span>
-              <input class="point__input" type="text" value="160" name="price">
+              <input class="point__input" type="text" value="${this._cost}" name="price">
             </label>
       
             <div class="point__buttons">

@@ -64,6 +64,7 @@ export const getTripPoint = () => (
     title: tripPointsTitles[getRandomInteger(tripPointsTitles.length - 1)],
     destination: cities[getRandomInteger(cities.length - 1)],
     dateStart: getRandomRecentDate(),
+    dateEnd: getRandomRecentDate(),
     duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
     offers: spliceRandom(offers, MAX_OFFERS_NUM),
     cost: getRandomInteger(MAX_COST) + MIN_COST,

@@ -9,11 +9,9 @@ export class Trip extends Component {
     this._title = trip.title;
     this._dates = trip.dates;
     this._cost = trip.cost;
-
-    this._element = null;
   }
 
-  _appendChildren() {
+  appendChildren() {
     const tripPoints = new TripPoints();
     document.querySelector(`.main`).appendChild(tripPoints.create());
   }
