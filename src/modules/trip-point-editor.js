@@ -42,8 +42,7 @@ export class TripPointEditor extends Component {
           altInput: true,
           enableTime: true,
           altFormat: `H:i`,
-          dateFormat: `j F`,
-          defaultDate: this._dateStart || new Date(),
+          defaultDate: this._dateStart || [new Date(), new Date()],
           mode: `range`,
           locale: {
             rangeSeparator: ` — `
@@ -110,6 +109,7 @@ export class TripPointEditor extends Component {
   }
 
   update(data) {
+    debugger
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;
@@ -121,20 +121,20 @@ export class TripPointEditor extends Component {
 
   static createMapper(target) {
     return {
-      type: (value) => target.type = value,
+      type: (value) => {
+        target.type = value
+      },
       destination: (value) => {
         target.destination = value;
       },
       offer: (value) => {
-        console.log(value)
         value.trim() && target.offers.push(value)
       },
       price: (value) => {
         target.cost = value;
       },
       time: (value) => {
-        console.log(value)
-        target.dateStart = value;
+        target.dateStart = value.split(` — `);
       }
     };
   }
