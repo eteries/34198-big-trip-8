@@ -14,14 +14,16 @@ export class TripPointEditor extends Component {
     this._destination = tripPoint.destination;
     this._duration = tripPoint.duration;
     this._cost = tripPoint.cost;
+    this._type = tripPoint.type;
 
     this._onSubmit = null;
+
+    this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
 
     this._onSaveBtnClick = (event) => {
       event.preventDefault();
 
       const formData = new FormData(this._element.querySelector(`form`));
-      debugger
       const newData = this._processForm(formData);
 
       if (typeof this._onSubmit === `function`) {
@@ -53,11 +55,19 @@ export class TripPointEditor extends Component {
         this._element.querySelector(`.card__time`),
         {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`, defaultDate: this._dueDate || new Date()}
     );*/
+    this._element.querySelector(`.travel-way__select`)
+      .addEventListener(`click`, this._onClickInsideMenu);
   }
 
   detachEventListeners() {
     this._element.querySelector(`.point__button--save`)
       .removeEventListener(`click`, this._onSaveBtnClick);
+  }
+
+  _onClickInsideMenu() {
+    this._element.querySelector(`.travel-way__toggle`).checked = false;
+    this._type = this._element.querySelector(`[name=type]`).value;
+    this._element.querySelector(`.travel-way__label`).innerHTML = `${prepareIconString(this._type)}`;
   }
 
   set onSubmit(fn) {
@@ -86,7 +96,6 @@ export class TripPointEditor extends Component {
   _processForm(formData) {
     const entry = {
       type: ``,
-      title: ``,
       destination: ``,
       dateStart: ``,
       duration: 0,
@@ -109,20 +118,17 @@ export class TripPointEditor extends Component {
   }
 
   update(data) {
-    debugger
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;
     this._dateStart = data.dateStart;
-    this._dateEnd = data.dateEnd;
-    this._duration = data.duration;
     this._cost = data.cost;
   }
 
   static createMapper(target) {
     return {
       type: (value) => {
-        target.type = value
+        target.type = value;
       },
       destination: (value) => {
         target.destination = value;
@@ -134,7 +140,8 @@ export class TripPointEditor extends Component {
         target.cost = value;
       },
       time: (value) => {
-        target.dateStart = value.split(` — `);
+        const dates = value.split(` — `);
+        target.dateStart = [moment(dates[0]).valueOf(), moment(dates[1]).valueOf()];
       }
     };
   }
@@ -157,7 +164,7 @@ export class TripPointEditor extends Component {
             </label>
       
             <div class="travel-way">
-              <label class="travel-way__label" for="travel-way__toggle">✈️</label>
+              <label class="travel-way__label" for="travel-way__toggle">${prepareIconString(this._type)}</label>
       
               <input type="checkbox" class="travel-way__toggle visually-hidden" id="travel-way__toggle">
       
@@ -175,13 +182,12 @@ export class TripPointEditor extends Component {
             </div>
       
             <div class="point__destination-wrap" style="overflow-x: hidden">
-              <label class="point__destination-label" for="destination">Flight to</label>
-              <input class="point__destination-input" list="destination-select" id="destination" value="Chamonix" name="destination">
+              <label class="point__destination-label" for="destination">${this._type} to </label>
+              <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination}" name="destination">
               <datalist id="destination-select">
-                <option value="airport"></option>
-                <option value="Geneva"></option>
-                <option value="Chamonix"></option>
-                <option value="hotel"></option>
+                  ${cities.map((city) => `
+                    <option value="${city}"></option>
+                  `)}
               </datalist>
             </div>
       
@@ -189,7 +195,7 @@ export class TripPointEditor extends Component {
               choose time
               <input class="point__input" 
                       type="text" 
-                      value="${formatTime(this._dateStart)}&nbsp;&mdash;${formatTime(this._dateStart + this._duration)}"
+                      value="${this._dateStart}"
                       name="time"
                       placeholder="00:00 — 24:00">
             </label>
@@ -206,7 +212,7 @@ export class TripPointEditor extends Component {
             </div>
       
             <div class="paint__favorite-wrap">
-              <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite">
+              <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite" checked="${this._isFavorite}">
               <label class="point__favorite" for="favorite">favorite</label>
             </div>
           </header>

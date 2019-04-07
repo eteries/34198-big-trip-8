@@ -44,8 +44,6 @@ export class TripPoints extends Component {
       point.destination = newTripPoint.destination;
       point.offers = newTripPoint.offers;
       point.dateStart = newTripPoint.dateStart;
-      point.dateEnd = newTripPoint.dateEnd;
-      point.duration = newTripPoint.duration;
       point.cost = newTripPoint.cost;
 
       tripPointComponent.update(point);

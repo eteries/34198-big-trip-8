@@ -58,19 +58,19 @@ export const getTrip = () => ({
   cost: 1600
 });
 
-export const getTripPoint = () => (
-  {
+export const getTripPoint = () => {
+  const date = getRandomRecentDate();
+  return {
     type: getRandomPointType(),
     title: tripPointsTitles[getRandomInteger(tripPointsTitles.length - 1)],
     destination: cities[getRandomInteger(cities.length - 1)],
-    dateStart: getRandomRecentDate(),
-    dateEnd: getRandomRecentDate(),
+    dateStart: [date, date + (1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN))],
     duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
     offers: [],
     cost: getRandomInteger(MAX_COST) + MIN_COST,
     isFavorite: false
-  }
-);
+  };
+};
 
 export const getCityDescription = (cityName) => {
   return `${cityName} is ${extractRandomSentences(LOREM_IPSUM, MAX_SENTENCES_IN_DESCRIPTION)}`;

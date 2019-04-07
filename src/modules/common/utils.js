@@ -1,3 +1,5 @@
+import * as moment from 'moment';
+
 export const getRandomInteger = (max) => Math.round(Math.random() * max);
 
 const shuffle = (arr) => {
@@ -13,17 +15,15 @@ export const spliceRandom = (arr, max) => shuffle([...arr]).splice(0, 1 + getRan
 
 export const extractRandomSentences = (text, max) => spliceRandom(text.split(`. `), max).join(` .`);
 
-export const formatDuration = (interval) => {
-  const intervalInMinutes = interval / (1000 * 60);
+export const formatDuration = (date0, date1) => {
+  const duration = moment.duration(date1 - date0);
+  const days = duration.days();
+  const hours = duration.hours();
+  const minutes = duration.minutes();
 
-  const hours = Math.floor(intervalInMinutes / 60);
-  let minutes = Math.floor(intervalInMinutes % 60);
-
-  if (minutes < 10) {
-    minutes = `0` + minutes;
-  }
-
-  return `${hours}h ${minutes}m`;
+  return `${days ? `${days}d:` : ``}
+          ${hours ? `${hours}h:` : ``}
+          ${`${minutes}m`}`;
 };
 
 export const formatTime = (date) => {

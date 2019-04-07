@@ -1,5 +1,5 @@
 import {prepareIconString} from './icons';
-import {formatDuration, formatTime} from './common/utils';
+import {formatDuration} from './common/utils';
 import {Component} from './common/component';
 import {offers} from '../data';
 import moment from 'moment';
@@ -9,9 +9,8 @@ export class TripPoint extends Component {
     super();
 
     this._type = tripPoint.type;
-    this._title = tripPoint.title;
+    this._destination = tripPoint.destination;
     this._dateStart = tripPoint.dateStart;
-    this._duration = tripPoint.duration;
     this._cost = tripPoint.cost;
     this._offers = tripPoint.offers;
 
@@ -37,14 +36,10 @@ export class TripPoint extends Component {
   }
 
   update(data) {
-
-    console.log(data);
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;
     this._dateStart = data.dateStart;
-    this._dateEnd = data.dateEnd;
-    this._duration = data.duration;
     this._cost = data.cost;
   }
 
@@ -52,12 +47,12 @@ export class TripPoint extends Component {
     return `
       <article class="trip-point">
         <i class="trip-icon">${prepareIconString(this._type)}</i>
-        <h3 class="trip-point__title">${this._destination}</h3>
+        <h3 class="trip-point__title">${this._type} to ${this._destination}</h3>
         <p class="trip-point__schedule">
           <span class="trip-point__timetable">
             ${moment(this._dateStart[0]).format(`HH:mm`)} - ${moment(this._dateStart[1]).format(`HH:mm`)}
             </span>
-            <span class="trip-point__duration">${formatDuration(this._duration)}</span>
+            <span class="trip-point__duration">${formatDuration(this._dateStart[0], this._dateStart[1])}</span>
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._cost}</p>
         <ul class="trip-point__offers">
