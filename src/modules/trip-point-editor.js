@@ -12,9 +12,12 @@ export class TripPointEditor extends Component {
 
     this._dateStart = tripPoint.dateStart;
     this._destination = tripPoint.destination;
-    this._duration = tripPoint.duration;
     this._cost = tripPoint.cost;
     this._type = tripPoint.type;
+
+    console.log(this);
+
+    this.datepicker = null;
 
     this._onSubmit = null;
 
@@ -38,7 +41,7 @@ export class TripPointEditor extends Component {
     this._element.querySelector(`.point__button--save`)
       .addEventListener(`click`, this._onSaveBtnClick);
 
-    flatpickr(
+    this.datepicker = flatpickr(
         this._element.querySelector(`[name="time"]`),
         {
           altInput: true,
@@ -50,11 +53,7 @@ export class TripPointEditor extends Component {
             rangeSeparator: ` — `
           }
         }
-    );/*
-    flatpickr(
-        this._element.querySelector(`.card__time`),
-        {enableTime: true, noCalendar: true, altInput: true, altFormat: `H:i`, dateFormat: `H:i`, defaultDate: this._dueDate || new Date()}
-    );*/
+    );
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`click`, this._onClickInsideMenu);
   }
@@ -62,12 +61,17 @@ export class TripPointEditor extends Component {
   detachEventListeners() {
     this._element.querySelector(`.point__button--save`)
       .removeEventListener(`click`, this._onSaveBtnClick);
+
+    this.datepicker.destroy();
   }
 
   _onClickInsideMenu() {
     this._element.querySelector(`.travel-way__toggle`).checked = false;
-    this._type = this._element.querySelector(`[name=type]`).value;
-    this._element.querySelector(`.travel-way__label`).innerHTML = `${prepareIconString(this._type)}`;
+    const a = this._element.querySelector(`[name=type]:checked`);
+    this._type = this._element.querySelector(`[name=type]:checked`).value;
+    this.detachEventListeners();
+    this._partialUpdate();
+    this.attachEventListeners();
   }
 
   set onSubmit(fn) {
@@ -173,7 +177,7 @@ export class TripPointEditor extends Component {
                     <div class="travel-way__select-group">
                       ${group.map((type) => `
                         <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}">
-                        <label class="travel-way__select-label" for="travel-way-taxi">${prepareIconString(type)} ${type}</label>
+                        <label class="travel-way__select-label" for="travel-way-${type}">${prepareIconString(type)} ${type}</label>
                       `).join(``)}
                     </div>
                   `).join(``)}
