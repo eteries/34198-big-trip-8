@@ -15,8 +15,6 @@ export class TripPointEditor extends Component {
     this._cost = tripPoint.cost;
     this._type = tripPoint.type;
 
-    console.log(this);
-
     this.datepicker = null;
 
     this._onSubmit = null;
@@ -55,7 +53,7 @@ export class TripPointEditor extends Component {
         }
     );
     this._element.querySelector(`.travel-way__select`)
-      .addEventListener(`click`, this._onClickInsideMenu);
+      .addEventListener(`change`, this._onClickInsideMenu);
   }
 
   detachEventListeners() {
@@ -66,31 +64,17 @@ export class TripPointEditor extends Component {
   }
 
   _onClickInsideMenu() {
-    this._element.querySelector(`.travel-way__toggle`).checked = false;
-    const a = this._element.querySelector(`[name=type]:checked`);
     this._type = this._element.querySelector(`[name=type]:checked`).value;
+    this._element.querySelector(`.travel-way__toggle`).checked = false;
     this.detachEventListeners();
     this._partialUpdate();
     this.attachEventListeners();
+    this._element.querySelector(`[name=type]`).find((elem) => elem.value === `this._type`).checked = true;
   }
 
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
-
-  /*_onChangeDate() {
-    this._state.isDate = !this._state.isDate;
-    this.removeListeners();
-    this._partialUpdate();
-    this.createListeners();
-  }
-
-  _onChangeRepeated() {
-    this._state.isRepeated = !this._state.isRepeated;
-    this.removeListeners();
-    this._partialUpdate();
-    this.createListeners();
-  }*/
 
   _partialUpdate() {
     this._element.innerHTML = this.template;
@@ -122,6 +106,8 @@ export class TripPointEditor extends Component {
   }
 
   update(data) {
+    console.log(data);
+    console.log(this._type)
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;
@@ -150,13 +136,6 @@ export class TripPointEditor extends Component {
     };
   }
 
-/*  time: (value) => {
-    const newDate = moment(target.dueDate, `DD MMMM`);
-    newDate.set(`hours`, (moment(value, `h:mm`).hours()));
-    newDate.set(`minutes`, (moment(value, `h:mm`).minutes()));
-    target.dueDate = newDate.valueOf();
-  }*/
-
   get template() {
     return `
       <article class="point">
@@ -176,7 +155,7 @@ export class TripPointEditor extends Component {
                   ${tripPointTypes.map((group) => `
                     <div class="travel-way__select-group">
                       ${group.map((type) => `
-                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}">
+                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}" checked="${type === this._type}">
                         <label class="travel-way__select-label" for="travel-way-${type}">${prepareIconString(type)} ${type}</label>
                       `).join(``)}
                     </div>
