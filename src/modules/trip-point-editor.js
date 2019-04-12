@@ -1,4 +1,3 @@
-import {formatTime, getRandomInteger, spliceRandom} from './common/utils';
 import {prepareIconString} from './icons';
 import {cities, collectPictures, getCityDescription, offers, tripPointTypes} from '../data';
 import {Component} from './common/component';
@@ -69,7 +68,7 @@ export class TripPointEditor extends Component {
     this.detachEventListeners();
     this._partialUpdate();
     this.attachEventListeners();
-    this._element.querySelector(`[name=type]`).find((elem) => elem.value === `this._type`).checked = true;
+    [...this._element.querySelectorAll(`[name=type]`)].find((elem) => elem.value === this._type).checked = true;
   }
 
   set onSubmit(fn) {
@@ -106,8 +105,6 @@ export class TripPointEditor extends Component {
   }
 
   update(data) {
-    console.log(data);
-    console.log(this._type)
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;
@@ -155,7 +152,7 @@ export class TripPointEditor extends Component {
                   ${tripPointTypes.map((group) => `
                     <div class="travel-way__select-group">
                       ${group.map((type) => `
-                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}" checked="${type === this._type}">
+                        <input class="travel-way__select-input visually-hidden" type="radio" id="travel-way-${type}" name="type" value="${type}" ${type === this._type ? `checked` : ``}>
                         <label class="travel-way__select-label" for="travel-way-${type}">${prepareIconString(type)} ${type}</label>
                       `).join(``)}
                     </div>
