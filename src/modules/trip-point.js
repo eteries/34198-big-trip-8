@@ -1,5 +1,5 @@
 import {prepareIconString} from './icons';
-import {formatDuration} from './common/utils';
+import {formatDuration, makeIdFromTitle} from './common/utils';
 import {Component} from './common/component';
 import {offers} from '../data';
 import moment from 'moment';
@@ -38,7 +38,7 @@ export class TripPoint extends Component {
   update(data) {
     this._type = data.type;
     this._destination = data.destination;
-    this._offers = data.selectedOffers;
+    this._offers = data.offers;
     this._dateStart = data.dateStart;
     this._cost = data.cost;
   }
@@ -57,10 +57,13 @@ export class TripPoint extends Component {
         <p class="trip-point__price">&euro;&nbsp;${this._cost}</p>
         <ul class="trip-point__offers">
           ${this._offers
-          .map((offer) => `
+          .map((selectedOffer) => {
+            const selected = offers.find((offer) => selectedOffer === makeIdFromTitle(offer.label));
+            return `
             <li>
-                <button class="trip-point__offer">${offer} +&euro;&nbsp;${offers.find((item) => item.label === offer).cost}</button>
-            </li>`)
+                <button class="trip-point__offer">${selected.label} +&euro;&nbsp;${selected.cost}</button>
+            </li>`;
+          })
           .join(``)}
         </ul>
       </article>`;
