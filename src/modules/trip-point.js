@@ -12,7 +12,7 @@ export class TripPoint extends Component {
     this._destination = tripPoint.destination;
     this._dateStart = tripPoint.dateStart;
     this._cost = tripPoint.cost;
-    this._offers = tripPoint.offers;
+    this._offers = tripPoint.selectedOffers;
 
     this._onClick = null;
 
@@ -38,7 +38,7 @@ export class TripPoint extends Component {
   update(data) {
     this._type = data.type;
     this._destination = data.destination;
-    this._offers = data.offers;
+    this._offers = data.selectedOffers;
     this._dateStart = data.dateStart;
     this._cost = data.cost;
   }

@@ -1,4 +1,5 @@
 import {prepareIconString} from './icons';
+import {makeIdFromTitle as makeId} from './common/utils';
 import {cities, collectPictures, getCityDescription, offers, tripPointTypes} from '../data';
 import {Component} from './common/component';
 
@@ -13,6 +14,7 @@ export class TripPointEditor extends Component {
     this._destination = tripPoint.destination;
     this._cost = tripPoint.cost;
     this._type = tripPoint.type;
+    this._isFavorite = tripPoint.isFavorite;
 
     this.datepicker = null;
 
@@ -86,7 +88,7 @@ export class TripPointEditor extends Component {
       destination: ``,
       dateStart: ``,
       duration: 0,
-      offers: [],
+      selectedOffers: [],
       cost: 0,
       isFavorite: false
     };
@@ -107,9 +109,10 @@ export class TripPointEditor extends Component {
   update(data) {
     this._type = data.type;
     this._destination = data.destination;
-    this._offers = data.offers;
+    this._offers = data.selectedOffers;
     this._dateStart = data.dateStart;
     this._cost = data.cost;
+    this._isFavorite = data.isFavorite;
   }
 
   static createMapper(target) {
@@ -121,7 +124,10 @@ export class TripPointEditor extends Component {
         target.destination = value;
       },
       offer: (value) => {
-        value.trim() && target.offers.push(value)
+        const selectedOffer = offers.find((offer) => makeId(offer.label) === value);
+        if (selectedOffer) {
+          target.selectedOffers.push(value);
+        }
       },
       price: (value) => {
         target.cost = value;
@@ -129,6 +135,9 @@ export class TripPointEditor extends Component {
       time: (value) => {
         const dates = value.split(` — `);
         target.dateStart = [moment(dates[0]).valueOf(), moment(dates[1]).valueOf()];
+      },
+      favorite: (value) => {
+        target.isFavorite = value;
       }
     };
   }
@@ -192,7 +201,7 @@ export class TripPointEditor extends Component {
             </div>
       
             <div class="paint__favorite-wrap">
-              <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite" checked="${this._isFavorite}">
+              <input type="checkbox" class="point__favorite-input visually-hidden" id="favorite" name="favorite" ${this._isFavorite ? `checked` : ``}>
               <label class="point__favorite" for="favorite">favorite</label>
             </div>
           </header>
@@ -201,26 +210,13 @@ export class TripPointEditor extends Component {
             <section class="point__offers">
               <h3 class="point__details-title">offers</h3>
       
-              <div class="point__offers-wrap">
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-luggage" name="offer" value="add-luggage">
-                <label for="add-luggage" class="point__offers-label">
-                  <span class="point__offer-service">Add luggage</span> + €<span class="point__offer-price">30</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="switch-to-comfort-class" name="offer" value="switch-to-comfort-class">
-                <label for="switch-to-comfort-class" class="point__offers-label">
-                  <span class="point__offer-service">Switch to comfort class</span> + €<span class="point__offer-price">100</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="add-meal" name="offer" value="add-meal">
-                <label for="add-meal" class="point__offers-label">
-                  <span class="point__offer-service">Add meal </span> + €<span class="point__offer-price">15</span>
-                </label>
-      
-                <input class="point__offers-input visually-hidden" type="checkbox" id="choose-seats" name="offer" value="choose-seats">
-                <label for="choose-seats" class="point__offers-label">
-                  <span class="point__offer-service">Choose seats</span> + €<span class="point__offer-price">5</span>
-                </label>
+              <div class="point__offers-wrap">              
+                ${offers.map((offer) => `
+                  <input class="point__offers-input visually-hidden" type="checkbox" id="${makeId(offer.label)}" name="offer" value="${makeId(offer.label)}" ${this._offers && this._offers.includes(makeId(offer.label)) ? `checked` : ``}>
+                  <label for="${makeId(offer.label)}" class="point__offers-label">
+                    <span class="point__offer-service">${offer.label}</span> + €<span class="point__offer-price">${offer.cost}</span>
+                  </label>
+                `).join(``)}
               </div>
       
             </section>

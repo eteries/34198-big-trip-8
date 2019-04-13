@@ -42,7 +42,7 @@ export class TripPoints extends Component {
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
       point.type = newTripPoint.type;
       point.destination = newTripPoint.destination;
-      point.offers = newTripPoint.offers;
+      point.offers = newTripPoint.selectedOffers;
       point.dateStart = newTripPoint.dateStart;
       point.cost = newTripPoint.cost;
 

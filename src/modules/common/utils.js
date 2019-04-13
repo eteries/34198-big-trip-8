@@ -42,3 +42,5 @@ export const createElement = (templateString) => {
   newElement.innerHTML = templateString.trim();
   return newElement.firstChild;
 };
+
+export const makeIdFromTitle = (title) => title.split(` `).join(`-`).toLowerCase();
