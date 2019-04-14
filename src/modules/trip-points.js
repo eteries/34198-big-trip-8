@@ -7,6 +7,8 @@ export class TripPoints extends Component {
   constructor() {
     super();
 
+    this.tripPoints = getTripPoints();
+
     this._onFilter = () => {
       this._filterPoints();
     };
@@ -23,10 +25,10 @@ export class TripPoints extends Component {
   }
 
   appendChildren() {
-    getTripPoints().forEach((item) => this._addPoint(item));
+    this.tripPoints.forEach((item, index) => this._addPoint(item, index));
   }
 
-  _addPoint(point) {
+  _addPoint(point, index) {
     const tripPointComponent = new TripPoint(point);
     const tripPointEditorComponent = new TripPointEditor(point);
 
@@ -50,6 +52,12 @@ export class TripPoints extends Component {
 
       tripPointComponent.create();
       container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
+      tripPointEditorComponent.destroy();
+    };
+
+    tripPointEditorComponent.onDelete = () => {
+      this.tripPoints[index] = null;
+      container.removeChild(tripPointEditorComponent.element);
       tripPointEditorComponent.destroy();
     };
   }
