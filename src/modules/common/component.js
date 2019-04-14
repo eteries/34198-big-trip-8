@@ -15,7 +15,7 @@ export class Component {
     }
 
     this._element = createElement(this.template);
-    this._appendChildren();
+    this.appendChildren();
     this.attachEventListeners();
     return this._element;
   }
@@ -26,11 +26,13 @@ export class Component {
     this._element = null;
   }
 
+  update() {}
+
   attachEventListeners() {}
 
   detachEventListeners() {}
 
-  _appendChildren() {}
+  appendChildren() {}
 
   get element() {
     return this._element;

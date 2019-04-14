@@ -1,4 +1,4 @@
-import {extractRandomSentences, getRandomInteger, spliceRandom} from './modules/common/utils';
+import {extractRandomSentences, getRandomInteger} from './modules/common/utils';
 
 export const tripPointTypes = [
   [`taxi`,
@@ -25,8 +25,6 @@ const MAX_SENTENCES_IN_DESCRIPTION = 3;
 
 const MAX_DURATION_IN_MIN = 180;
 const MIN_DURATION_IN_MIN = 20;
-
-const MAX_OFFERS_NUM = 2;
 
 const PICTURES_NUM = 4;
 
@@ -58,18 +56,19 @@ export const getTrip = () => ({
   cost: 1600
 });
 
-export const getTripPoint = () => (
-  {
+export const getTripPoint = () => {
+  const date = getRandomRecentDate();
+  return {
     type: getRandomPointType(),
     title: tripPointsTitles[getRandomInteger(tripPointsTitles.length - 1)],
     destination: cities[getRandomInteger(cities.length - 1)],
-    dateStart: getRandomRecentDate(),
+    dateStart: [date, date + (1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN))],
     duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
-    offers: spliceRandom(offers, MAX_OFFERS_NUM),
+    selectedOffers: [],
     cost: getRandomInteger(MAX_COST) + MIN_COST,
     isFavorite: false
-  }
-);
+  };
+};
 
 export const getCityDescription = (cityName) => {
   return `${cityName} is ${extractRandomSentences(LOREM_IPSUM, MAX_SENTENCES_IN_DESCRIPTION)}`;
