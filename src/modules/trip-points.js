@@ -7,10 +7,14 @@ export class TripPoints extends Component {
   constructor() {
     super();
 
-    this.tripPoints = getTripPoints();
+    this.tripPointsAll = getTripPoints();
+    this.tripPointsVisible = this.tripPointsAll;
 
-    this._onFilter = () => {
-      this._filterPoints();
+    this._onFilter = (event) => {
+      this._filterPoints(event.target.id);
+      const container = this._element.querySelector(`.trip-day__items`);
+      container.innerHTML = ``;
+      this.appendChildren();
     };
   }
 
@@ -25,7 +29,7 @@ export class TripPoints extends Component {
   }
 
   appendChildren() {
-    this.tripPoints.forEach((item, index) => this._addPoint(item, index));
+    this.tripPointsVisible.forEach((item, index) => this._addPoint(item, index));
   }
 
   _addPoint(point, index) {
@@ -56,15 +60,28 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onDelete = () => {
-      this.tripPoints[index] = null;
+      this.tripPointsAll[index] = null;
       container.removeChild(tripPointEditorComponent.element);
       tripPointEditorComponent.destroy();
     };
   }
 
-  _filterPoints() {
-    this.destroy();
-    document.querySelector(`.main`).appendChild(this.create());
+  _filterPoints(filterName) {
+    switch (filterName) {
+      case `filter-everything`:
+        this.tripPointsVisible = this.tripPointsAll;
+        break;
+
+      case `filter-future`:
+        this.tripPointsVisible = this.tripPointsAll
+          .filter((point) => point.dateStart[0] > Date.now());
+        break;
+
+      case `filter-past`:
+        this.tripPointsVisible = this.tripPointsAll
+          .filter((point) => point.dateStart[1] < Date.now());
+        break;
+    }
   }
 
   get template() {
