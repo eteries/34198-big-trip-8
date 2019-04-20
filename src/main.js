@@ -17,5 +17,11 @@ document.querySelector(`.header__wrap`).appendChild(trip.create());
 const controls = new Controls();
 document.querySelector(`.header__wrap`).appendChild(controls.create());
 
-const stats = new Stats();
-document.querySelector(`#stats`).appendChild(stats.create());
+const paintStats = () => {
+  const stats = new Stats();
+  document.querySelector(`#stats`).innerHTML = null;
+  document.querySelector(`#stats`).appendChild(stats.create());
+};
+
+paintStats();
+document.querySelector(`[href$=stats]`).addEventListener(`click`, paintStats);
