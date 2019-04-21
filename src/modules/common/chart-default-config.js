@@ -20,8 +20,7 @@ export const config = {
         },
         color: `#000000`,
         anchor: `end`,
-        align: `start`,
-        formatter: (val) => `€ ${ val }`
+        align: `start`
       }
     },
     title: {

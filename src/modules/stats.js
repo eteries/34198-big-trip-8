@@ -3,17 +3,22 @@ import {config} from './common/chart-default-config';
 import Chart from 'chart.js';
 import * as cloneDeep from 'lodash.clonedeep';
 import {getTripPoints, tripPointTypes} from '../data';
+import * as moment from 'moment';
 
 const types = [`money`, `transport`, `time-spend`];
 
 export class Stats extends Component {
   constructor() {
     super();
-    this.stats = {};
+    this.stats = {
+      money: {},
+      transport: {},
+      time: {}
+    };
   }
 
   getStats(points) {
-    return points.reduce((acc, cur) => {
+    return points.reduce((acc, cur, index) => {
       acc.money[cur.type] = acc.money[cur.type] ? acc.money[cur.type] + cur.cost : cur.cost;
 
       if (tripPointTypes[0].includes(cur.type)) {
@@ -21,13 +26,14 @@ export class Stats extends Component {
       }
 
       acc.time[cur.type] = acc.time[cur.type] ? acc.time[cur.type] + cur.duration : cur.duration;
+      if (index === points.length - 1) {
+        Object.entries(acc.time).forEach((entry) => {
+          acc.time[(entry[0])] = moment.duration(entry[1]).asMinutes();
+        });
+      }
 
       return acc;
-    }, {
-      money: {},
-      transport: {},
-      time: {}
-    });
+    }, this.stats);
   }
 
   appendChildren() {
@@ -37,52 +43,38 @@ export class Stats extends Component {
 
     const stats = this.getStats(getTripPoints());
 
-    // Рассчитаем высоту канваса в зависимости от того, сколько данных в него будет передаваться
     const BAR_HEIGHT = 55;
-    moneyCtx.height = BAR_HEIGHT * 6;
-    transportCtx.height = BAR_HEIGHT * 4;
-    timeSpendCtx.height = BAR_HEIGHT * 4;
 
     const moneyConfig = cloneDeep(config);
+    moneyConfig.options.title.text = `MONEY`;
+    moneyConfig.data.labels = Object.keys(stats.money);
+    moneyConfig.data.datasets[0].data = Object.values(stats.money);
+    moneyConfig.options.plugins.datalabels.formatter = (val) => `€ ${ val }`;
+    moneyCtx.height = BAR_HEIGHT * moneyConfig.data.labels.length;
+    this.moneyChart = new Chart(moneyCtx, moneyConfig);
+
     const transportConfig = cloneDeep(config);
-    const timeSpendConfig = cloneDeep(config);
+    transportConfig.options.title.text = `TRANSPORT`;
+    transportConfig.data.labels = Object.keys(stats.transport);
+    transportConfig.data.datasets[0].data = Object.values(stats.transport);
+    transportConfig.options.plugins.datalabels.formatter = (val) => `x${val}`;
+    transportCtx.height = BAR_HEIGHT * transportConfig.data.labels.length;
+    this.transportChart = new Chart(transportCtx, transportConfig);
 
-    const moneyChart = new Chart(moneyCtx, Object.assign(moneyConfig, {
-      data: Object.assign(moneyConfig.data, {
-        labels: Object.keys(stats.money),
-        datasets: [Object.assign(moneyConfig.data.datasets, {
-          data: Object.values(stats.money)
-        })],
-        title: Object.assign(moneyConfig.options.title, {
-          text: `MONEY`
-        })
-      })
-    }));
+    const timeConfig = cloneDeep(config);
+    timeConfig.options.title.text = `TIME SPENT`;
+    timeConfig.data.labels = Object.keys(stats.time);
+    timeConfig.data.datasets[0].data = Object.values(stats.time);
+    timeConfig.options.plugins.datalabels.formatter = (val) => `${val} min`;
+    timeSpendCtx.height = BAR_HEIGHT * timeConfig.data.labels.length;
+    this.timeChart = new Chart(timeSpendCtx, timeConfig);
+  }
 
-    const transportChart = new Chart(transportCtx, Object.assign(transportConfig, {
-      data: Object.assign(transportConfig.data, {
-        labels: Object.keys(stats.transport),
-        datasets: [Object.assign(transportConfig.data.datasets, {
-          data: Object.values(stats.transport)
-        })],
-        title: Object.assign(transportConfig.options.title, {
-          text: `TRANSPORT`
-        })
-      })
-    }));
-
-    const timeSpendChart = new Chart(timeSpendCtx, Object.assign(timeSpendConfig, {
-      data: Object.assign(timeSpendConfig.data, {
-        labels: Object.keys(stats.time),
-        datasets: [Object.assign(timeSpendConfig.data.datasets, {
-          data: Object.values(stats.time)
-        })],
-        title: Object.assign(timeSpendConfig.options.title, {
-          text: `TIME SPENT`
-        })
-      })
-    }));
-
+  destroy() {
+    super.destroy();
+    this.moneyChart = null;
+    this.transportChart = null;
+    this.timeChart = null;
   }
 
   get template() {
