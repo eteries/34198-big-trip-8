@@ -50,6 +50,7 @@ export class TripPoints extends Component {
       point.destination = newTripPoint.destination;
       point.offers = newTripPoint.selectedOffers;
       point.dateStart = newTripPoint.dateStart;
+      point.dateEnd = newTripPoint.dateEnd;
       point.cost = newTripPoint.cost;
 
       tripPointComponent.update(point);
@@ -74,12 +75,12 @@ export class TripPoints extends Component {
 
       case `filter-future`:
         this.tripPointsVisible = this.tripPointsAll
-          .filter((point) => point.dateStart[0] > Date.now());
+          .filter((point) => point.dateStart > Date.now());
         break;
 
       case `filter-past`:
         this.tripPointsVisible = this.tripPointsAll
-          .filter((point) => point.dateStart[1] < Date.now());
+          .filter((point) => point.dateEnd < Date.now());
         break;
     }
   }

@@ -11,6 +11,7 @@ export class TripPoint extends Component {
     this._type = tripPoint.type;
     this._destination = tripPoint.destination;
     this._dateStart = tripPoint.dateStart;
+    this._dateEnd = tripPoint.dateEnd;
     this._cost = tripPoint.cost;
     this._offers = tripPoint.selectedOffers;
 
@@ -40,6 +41,7 @@ export class TripPoint extends Component {
     this._destination = data.destination;
     this._offers = data.offers;
     this._dateStart = data.dateStart;
+    this._dateEnd = data.dateEnd;
     this._cost = data.cost;
   }
 
@@ -50,9 +52,9 @@ export class TripPoint extends Component {
         <h3 class="trip-point__title">${this._type} to ${this._destination}</h3>
         <p class="trip-point__schedule">
           <span class="trip-point__timetable">
-            ${moment(this._dateStart[0]).format(`HH:mm`)} - ${moment(this._dateStart[1]).format(`HH:mm`)}
+            ${moment(this._dateStart).format(`HH:mm`)} - ${moment(this._dateEnd).format(`HH:mm`)}
             </span>
-            <span class="trip-point__duration">${formatDuration(this._dateStart[0], this._dateStart[1])}</span>
+            <span class="trip-point__duration">${formatDuration(this._dateStart, this._dateEnd)}</span>
         </p>
         <p class="trip-point__price">&euro;&nbsp;${this._cost}</p>
         <ul class="trip-point__offers">

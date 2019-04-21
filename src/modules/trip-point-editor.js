@@ -11,6 +11,7 @@ export class TripPointEditor extends Component {
     super();
 
     this._dateStart = tripPoint.dateStart;
+    this._dateEnd = tripPoint.dateEnd;
     this._destination = tripPoint.destination;
     this._cost = tripPoint.cost;
     this._type = tripPoint.type;
@@ -52,16 +53,22 @@ export class TripPointEditor extends Component {
       .addEventListener(`click`, this._onDeleteBtnClick);
 
     this.datepicker = flatpickr(
-        this._element.querySelector(`[name="time"]`),
+        this._element.querySelector(`[name="dateStart"]`),
         {
           altInput: true,
           enableTime: true,
           altFormat: `H:i`,
-          defaultDate: this._dateStart || [new Date(), new Date()],
-          mode: `range`,
-          locale: {
-            rangeSeparator: ` — `
-          }
+          defaultDate: this._dateStart || new Date()
+        }
+    );
+
+    this.datepicker = flatpickr(
+        this._element.querySelector(`[name="dateEnd"]`),
+        {
+          altInput: true,
+          enableTime: true,
+          altFormat: `H:i`,
+          defaultDate: this._dateEnd || new Date()
         }
     );
     this._element.querySelector(`.travel-way__select`)
@@ -105,6 +112,7 @@ export class TripPointEditor extends Component {
       type: ``,
       destination: ``,
       dateStart: ``,
+      dateEnd: ``,
       duration: 0,
       selectedOffers: [],
       cost: 0,
@@ -129,6 +137,7 @@ export class TripPointEditor extends Component {
     this._destination = data.destination;
     this._offers = data.selectedOffers;
     this._dateStart = data.dateStart;
+    this._dateEnd = data.dateEnd;
     this._cost = data.cost;
     this._isFavorite = data.isFavorite;
   }
@@ -150,9 +159,11 @@ export class TripPointEditor extends Component {
       price: (value) => {
         target.cost = value;
       },
-      time: (value) => {
-        const dates = value.split(` — `);
-        target.dateStart = [moment(dates[0]).valueOf(), moment(dates[1]).valueOf()];
+      dateStart: (value) => {
+        target.dateStart = moment(value).valueOf();
+      },
+      dateEnd: (value) => {
+        target.dateEnd = moment(value).valueOf();
       },
       favorite: (value) => {
         target.isFavorite = value;
@@ -197,15 +208,12 @@ export class TripPointEditor extends Component {
                   `)}
               </datalist>
             </div>
-      
-            <label class="point__time">
+            
+            <div class="point__time">
               choose time
-              <input class="point__input" 
-                      type="text" 
-                      value="${this._dateStart}"
-                      name="time"
-                      placeholder="00:00 — 24:00">
-            </label>
+              <input class="point__input" type="text" value="${this._dateStart}" name="dateStart" placeholder="19:00">
+              <input class="point__input" type="text" value="${this._dateEnd}" name="dateEnd" placeholder="21:00">
+            </div>
       
             <label class="point__price">
               write price
