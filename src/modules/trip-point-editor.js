@@ -19,6 +19,7 @@ export class TripPointEditor extends Component {
     this.datepicker = null;
 
     this._onSubmit = null;
+    this._onDelete = null;
 
     this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
 
@@ -34,11 +35,21 @@ export class TripPointEditor extends Component {
 
       this.update(newData);
     };
+
+    this._onDeleteBtnClick = (event) => {
+      event.preventDefault();
+
+      if (typeof this._onDelete === `function`) {
+        this._onDelete();
+      }
+    };
   }
 
   attachEventListeners() {
     this._element.querySelector(`.point__button--save`)
       .addEventListener(`click`, this._onSaveBtnClick);
+    this._element.querySelector(`.point__button--delete`)
+      .addEventListener(`click`, this._onDeleteBtnClick);
 
     this.datepicker = flatpickr(
         this._element.querySelector(`[name="time"]`),
@@ -61,6 +72,9 @@ export class TripPointEditor extends Component {
     this._element.querySelector(`.point__button--save`)
       .removeEventListener(`click`, this._onSaveBtnClick);
 
+    this._element.querySelector(`.point__button--delete`)
+      .removeEventListener(`click`, this._onDeleteBtnClick);
+
     this.datepicker.destroy();
   }
 
@@ -75,6 +89,10 @@ export class TripPointEditor extends Component {
 
   set onSubmit(fn) {
     this._onSubmit = fn;
+  }
+
+  set onDelete(fn) {
+    this._onDelete = fn;
   }
 
   _partialUpdate() {
@@ -170,7 +188,7 @@ export class TripPointEditor extends Component {
               </div>
             </div>
       
-            <div class="point__destination-wrap" style="overflow-x: hidden">
+            <div class="point__destination-wrap">
               <label class="point__destination-label" for="destination">${this._type} to </label>
               <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination}" name="destination">
               <datalist id="destination-select">
@@ -197,7 +215,7 @@ export class TripPointEditor extends Component {
       
             <div class="point__buttons">
               <button class="point__button point__button--save" type="submit">Save</button>
-              <button class="point__button" type="reset">Delete</button>
+              <button class="point__button point__button--delete" type="reset">Delete</button>
             </div>
       
             <div class="paint__favorite-wrap">
