@@ -8,6 +8,8 @@ export class TripPoint extends Component {
   constructor(tripPoint) {
     super();
 
+    console.log(tripPoint)
+
     this._type = tripPoint.type;
     this._destination = tripPoint.destination;
     this._dateStart = tripPoint.dateStart;

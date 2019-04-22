@@ -1,14 +1,20 @@
-import {getTripPoints} from '../data';
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
+import {API} from './common/api';
+
+const api = new API();
 
 export class TripPoints extends Component {
   constructor() {
     super();
 
-    this.tripPointsAll = getTripPoints();
-    this.tripPointsVisible = this.tripPointsAll;
+    api.getTripPoints()
+      .then((points) => {
+        console.log(points)
+        this.tripPointsAll = points;
+        this.tripPointsVisible = points;
+      });
 
     this._onFilter = (event) => {
       this._filterPoints(event.target.id);
