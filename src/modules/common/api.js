@@ -1,7 +1,7 @@
 import {ModelPoint} from './model-point';
 
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
-const KEY = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
+const KEY = `Basic dXNlc3kBwYXNzd29yZAo=${Math.random()}`;
 
 const Method = {
   GET: `GET`,
@@ -36,6 +36,11 @@ export const API = class {
 
   getAvailableOffers() {
     return this._load({url: `offers`})
+      .then(toJSON);
+  }
+
+  getAvailableDestinations() {
+    return this._load({url: `destinations`})
       .then(toJSON);
   }
 

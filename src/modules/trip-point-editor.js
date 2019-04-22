@@ -1,12 +1,10 @@
 import {prepareIconString} from './icons';
-import {makeIdFromTitle as makeId} from './common/utils';
-import {cities, collectPictures, getCityDescription, tripPointTypes} from '../data';
+import {collectPictures, tripPointTypes} from '../data';
 import {Component} from './common/component';
 import {api} from '../main';
 
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {TripPoints} from './trip-points';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -27,18 +25,24 @@ export class TripPointEditor extends Component {
 
     api.getAvailableOffers()
       .then((allOffers) => {
-        const newOffers = allOffers.find((offers) => offers.type === this._type)
+        this._offers = allOffers.find((offers) => offers.type === this._type)
           .offers
           .map((offer) => ({
             title: offer.name,
             price: offer.price,
             accepted: Boolean(this._offers.find((current) => {
-              debugger;
               return (current.title === offer.name) && current.accepted
             }))
           }));
-        console.log(newOffers);
-        console.log(this._offers);
+      });
+
+    api.getAvailableDestinations()
+      .then((destinations) => {
+        this._destinationString = destinations
+          .map((destination) => `
+            <option value="${destination.name}"></option>
+          `)
+          .join(``);
       });
 
     this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
@@ -205,8 +209,12 @@ export class TripPointEditor extends Component {
     };
   }
 
-  _getOffers() {
-    const offersByCurrentType = api.getAvailableOffers()
+  appendChildren() {
+    super.appendChildren();
+    const select = this._element.querySelector(`#destination-select`);
+    if (select) {
+      select.insertAdjacentHTML(`beforeEnd`, this._destinationString);
+    }
   }
 
   get template() {
@@ -241,9 +249,7 @@ export class TripPointEditor extends Component {
               <label class="point__destination-label" for="destination">${this._type} to </label>
               <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination.name}" name="destination">
               <datalist id="destination-select">
-                  ${cities.map((city) => `
-                    <option value="${city}"></option>
-                  `)}
+                  
               </datalist>
             </div>
             
