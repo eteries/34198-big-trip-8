@@ -1,6 +1,6 @@
 import {prepareIconString} from './icons';
 import {makeIdFromTitle as makeId} from './common/utils';
-import {cities, collectPictures, getCityDescription, offers, tripPointTypes} from '../data';
+import {cities, collectPictures, getCityDescription, tripPointTypes} from '../data';
 import {Component} from './common/component';
 
 import flatpickr from 'flatpickr';
@@ -15,6 +15,7 @@ export class TripPointEditor extends Component {
     this._destination = tripPoint.destination;
     this._cost = tripPoint.cost;
     this._type = tripPoint.type;
+    this._offers = tripPoint.offers;
     this._isFavorite = tripPoint.isFavorite;
 
     this.datepicker = null;
@@ -44,6 +45,8 @@ export class TripPointEditor extends Component {
         this._onDelete();
       }
     };
+
+    this._onSelectOffer = this._onSelectOffer.bind(this);
   }
 
   attachEventListeners() {
@@ -58,7 +61,7 @@ export class TripPointEditor extends Component {
           altInput: true,
           enableTime: true,
           altFormat: `H:i`,
-          defaultDate: this._dateStart || new Date()
+          defaultDate: this._dateStart
         }
     );
 
@@ -68,11 +71,15 @@ export class TripPointEditor extends Component {
           altInput: true,
           enableTime: true,
           altFormat: `H:i`,
-          defaultDate: this._dateEnd || new Date()
+          defaultDate: this._dateEnd
         }
     );
+
     this._element.querySelector(`.travel-way__select`)
       .addEventListener(`change`, this._onClickInsideMenu);
+
+    this._element.querySelector(`.point__offers-wrap`)
+      .addEventListener(`change`, this._onSelectOffer);
   }
 
   detachEventListeners() {
@@ -81,6 +88,12 @@ export class TripPointEditor extends Component {
 
     this._element.querySelector(`.point__button--delete`)
       .removeEventListener(`click`, this._onDeleteBtnClick);
+
+    this._element.querySelector(`.travel-way__select`)
+      .removeEventListener(`change`, this._onClickInsideMenu);
+
+    this._element.querySelector(`.point__offers-wrap`)
+      .removeEventListener(`change`, this._onSelectOffer);
 
     this.datepicker.destroy();
   }
@@ -92,6 +105,13 @@ export class TripPointEditor extends Component {
     this._partialUpdate();
     this.attachEventListeners();
     [...this._element.querySelectorAll(`[name=type]`)].find((elem) => elem.value === this._type).checked = true;
+  }
+
+  _onSelectOffer(event) {
+    const selected = this._offers.find((offer) => offer.title === event.target.value);
+    if (selected) {
+      selected.accepted = !selected.accepted;
+    }
   }
 
   set onSubmit(fn) {
@@ -114,7 +134,7 @@ export class TripPointEditor extends Component {
       dateStart: ``,
       dateEnd: ``,
       duration: 0,
-      selectedOffers: [],
+      offers: [],
       cost: 0,
       isFavorite: false
     };
@@ -129,13 +149,15 @@ export class TripPointEditor extends Component {
       }
     }
 
+    entry.offers = this._offers;
+
     return entry;
   }
 
   update(data) {
     this._type = data.type;
     this._destination = data.destination;
-    this._offers = data.selectedOffers;
+    this._offers = data.offers;
     this._dateStart = data.dateStart;
     this._dateEnd = data.dateEnd;
     this._cost = data.cost;
@@ -149,12 +171,6 @@ export class TripPointEditor extends Component {
       },
       destination: (value) => {
         target.destination = value;
-      },
-      offer: (value) => {
-        const selectedOffer = offers.find((offer) => makeId(offer.label) === value);
-        if (selectedOffer) {
-          target.selectedOffers.push(value);
-        }
       },
       price: (value) => {
         target.cost = value;
@@ -201,7 +217,7 @@ export class TripPointEditor extends Component {
       
             <div class="point__destination-wrap">
               <label class="point__destination-label" for="destination">${this._type} to </label>
-              <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination}" name="destination">
+              <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination.name}" name="destination">
               <datalist id="destination-select">
                   ${cities.map((city) => `
                     <option value="${city}"></option>
@@ -237,10 +253,10 @@ export class TripPointEditor extends Component {
               <h3 class="point__details-title">offers</h3>
       
               <div class="point__offers-wrap">              
-                ${offers.map((offer) => `
-                  <input class="point__offers-input visually-hidden" type="checkbox" id="${makeId(offer.label)}" name="offer" value="${makeId(offer.label)}" ${this._offers && this._offers.includes(makeId(offer.label)) ? `checked` : ``}>
-                  <label for="${makeId(offer.label)}" class="point__offers-label">
-                    <span class="point__offer-service">${offer.label}</span> + €<span class="point__offer-price">${offer.cost}</span>
+                ${this._offers.map((offer, index) => `
+                  <input class="point__offers-input visually-hidden" type="checkbox" id="offer-${index}" name="offer" value="${offer.title}" ${ offer.accepted ? `checked` : ``}>
+                  <label for="offer-${index}" class="point__offers-label">
+                    <span class="point__offer-service">${offer.title}</span> + €<span class="point__offer-price">${offer.price}</span>
                   </label>
                 `).join(``)}
               </div>
@@ -248,7 +264,7 @@ export class TripPointEditor extends Component {
             </section>
             <section class="point__destination">
               <h3 class="point__details-title">Destination</h3>
-              <p class="point__destination-text">${getCityDescription(this._destination)}</p>
+              <p class="point__destination-text">${this._destination.description}</p>
               <div class="point__destination-images">
                 ${collectPictures().map((src) => `
                   <img src="${src}" alt="picture from place" class="point__destination-image">

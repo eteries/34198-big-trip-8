@@ -1,6 +1,9 @@
 import {prepareIconString} from './icons';
 import {TripPoints} from './trip-points';
 import {Component} from './common/component';
+import {API} from './common/api';
+
+const api = new API();
 
 export class Trip extends Component {
   constructor(trip) {
@@ -9,11 +12,13 @@ export class Trip extends Component {
     this._title = trip.title;
     this._dates = trip.dates;
     this._cost = trip.cost;
-  }
 
-  appendChildren() {
-    const tripPoints = new TripPoints();
-    document.querySelector(`.main`).appendChild(tripPoints.create());
+    api.getTripPoints()
+      .then((points) => {
+        console.log(points)
+        const tripPoints = new TripPoints(points);
+        document.querySelector(`.main`).appendChild(tripPoints.create());
+      });
   }
 
   get template() {

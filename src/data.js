@@ -36,10 +36,10 @@ const MIN_COST = 50;
 const DAY = 24 * 60 * 60 * 1000;
 
 export const offers = [
-  {label: `Add luggage`, cost: 25},
-  {label: `Switch to comfort class`, cost: 50},
-  {label: `Add meal`, cost: 15},
-  {label: `Choose seats`, cost: 15}
+  {label: `Add luggage`, cost: 25, accepted: false},
+  {label: `Switch to comfort class`, cost: 50, accepted: false},
+  {label: `Add meal`, cost: 15, accepted: false},
+  {label: `Choose seats`, cost: 15, accepted: false}
 ];
 
 const getRandomRecentDate = () => Date.now() - DAY + Math.floor(Math.random() * DAY);
@@ -65,7 +65,7 @@ export const getTripPoint = () => {
     dateStart: date,
     dateEnd: date + (1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN)),
     duration: 1000 * 60 * (getRandomInteger(MAX_DURATION_IN_MIN) + MIN_DURATION_IN_MIN),
-    selectedOffers: [],
+    offers,
     cost: getRandomInteger(MAX_COST) + MIN_COST,
     isFavorite: false
   };

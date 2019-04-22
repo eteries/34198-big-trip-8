@@ -1,20 +1,13 @@
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
-import {API} from './common/api';
-
-const api = new API();
 
 export class TripPoints extends Component {
-  constructor() {
+  constructor(points) {
     super();
 
-    api.getTripPoints()
-      .then((points) => {
-        console.log(points)
-        this.tripPointsAll = points;
-        this.tripPointsVisible = points;
-      });
+    this.tripPointsAll = points;
+    this.tripPointsVisible = points;
 
     this._onFilter = (event) => {
       this._filterPoints(event.target.id);
@@ -38,7 +31,7 @@ export class TripPoints extends Component {
     this.tripPointsVisible.forEach((item, index) => this._addPoint(item, index));
   }
 
-  _addPoint(point, index) {
+  _addPoint(point) {
     const tripPointComponent = new TripPoint(point);
     const tripPointEditorComponent = new TripPointEditor(point);
 
@@ -54,7 +47,7 @@ export class TripPoints extends Component {
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
       point.type = newTripPoint.type;
       point.destination = newTripPoint.destination;
-      point.offers = newTripPoint.selectedOffers;
+      point.offers = newTripPoint.offers;
       point.dateStart = newTripPoint.dateStart;
       point.dateEnd = newTripPoint.dateEnd;
       point.cost = newTripPoint.cost;
@@ -67,7 +60,7 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onDelete = () => {
-      this.tripPointsAll[index] = null;
+      this.tripPointsAll[point.id] = null;
       container.removeChild(tripPointEditorComponent.element);
       tripPointEditorComponent.destroy();
     };

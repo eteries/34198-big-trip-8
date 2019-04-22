@@ -1,3 +1,5 @@
+import {ModelPoint} from './model-point';
+
 const END_POINT = `https://es8-demo-srv.appspot.com/big-trip/`;
 const KEY = `Basic dXNlckBwYXNzd29yZAo=${Math.random()}`;
 
@@ -28,7 +30,8 @@ export const API = class {
 
   getTripPoints() {
     return this._load({url: `points`})
-      .then(toJSON);
+      .then(toJSON)
+      .then(ModelPoint.parsePoints);
   }
 
   createTripPoint({tripPoint}) {
