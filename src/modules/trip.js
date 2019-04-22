@@ -1,9 +1,7 @@
 import {prepareIconString} from './icons';
 import {TripPoints} from './trip-points';
 import {Component} from './common/component';
-import {API} from './common/api';
-
-const api = new API();
+import {api} from '../main';
 
 export class Trip extends Component {
   constructor(trip) {

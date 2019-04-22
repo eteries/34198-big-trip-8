@@ -34,6 +34,11 @@ export const API = class {
       .then(ModelPoint.parsePoints);
   }
 
+  getAvailableOffers() {
+    return this._load({url: `offers`})
+      .then(toJSON);
+  }
+
   createTripPoint({tripPoint}) {
     return this._load({
       url: `points`,

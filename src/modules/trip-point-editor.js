@@ -2,9 +2,11 @@ import {prepareIconString} from './icons';
 import {makeIdFromTitle as makeId} from './common/utils';
 import {cities, collectPictures, getCityDescription, tripPointTypes} from '../data';
 import {Component} from './common/component';
+import {api} from '../main';
 
 import flatpickr from 'flatpickr';
 import moment from 'moment';
+import {TripPoints} from './trip-points';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -22,6 +24,22 @@ export class TripPointEditor extends Component {
 
     this._onSubmit = null;
     this._onDelete = null;
+
+    api.getAvailableOffers()
+      .then((allOffers) => {
+        const newOffers = allOffers.find((offers) => offers.type === this._type)
+          .offers
+          .map((offer) => ({
+            title: offer.name,
+            price: offer.price,
+            accepted: Boolean(this._offers.find((current) => {
+              debugger;
+              return (current.title === offer.name) && current.accepted
+            }))
+          }));
+        console.log(newOffers);
+        console.log(this._offers);
+      });
 
     this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
 
@@ -185,6 +203,10 @@ export class TripPointEditor extends Component {
         target.isFavorite = value;
       }
     };
+  }
+
+  _getOffers() {
+    const offersByCurrentType = api.getAvailableOffers()
   }
 
   get template() {

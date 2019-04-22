@@ -4,6 +4,9 @@ import {getTrip} from './data';
 import {Controls} from './modules/controls';
 import {Sorting} from './modules/sorting';
 import {Stats} from './modules/stats';
+import {API} from './modules/common/api';
+
+export const api = new API();
 
 const sorting = new Sorting();
 document.querySelector(`#table`).appendChild(sorting.create());
