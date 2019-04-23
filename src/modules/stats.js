@@ -4,6 +4,8 @@ import Chart from 'chart.js';
 import * as cloneDeep from 'lodash.clonedeep';
 import {getTripPoints, tripPointTypes} from '../data';
 import * as moment from 'moment';
+import {api} from '../main';
+import {TripPoints} from './trip-points';
 
 const types = [`money`, `transport`, `time-spend`];
 
@@ -15,6 +17,10 @@ export class Stats extends Component {
       transport: {},
       time: {}
     };
+
+    api.getTripPoints()
+      .then((points) => this.getStats(points))
+      .then((stats) => this.renderStats(stats));
   }
 
   getStats(points) {
@@ -25,10 +31,11 @@ export class Stats extends Component {
         acc.transport[cur.type] = acc.transport[cur.type] ? ++acc.transport[cur.type] : 1;
       }
 
-      acc.time[cur.type] = acc.time[cur.type] ? acc.time[cur.type] + cur.duration : cur.duration;
+      let duration = moment.duration(moment(cur.dateEnd) - moment(cur.dateStart)).asMilliseconds();
+      acc.time[cur.type] = acc.time[cur.type] ? acc.time[cur.type] + duration : duration;
       if (index === points.length - 1) {
         Object.entries(acc.time).forEach((entry) => {
-          acc.time[(entry[0])] = moment.duration(entry[1]).asMinutes();
+          acc.time[(entry[0])] = Math.round(moment.duration(entry[1]).asHours());
         });
       }
 
@@ -36,12 +43,10 @@ export class Stats extends Component {
     }, this.stats);
   }
 
-  appendChildren() {
+  renderStats(stats) {
     const moneyCtx = this._element.querySelector(`.statistic__money`);
     const transportCtx = this._element.querySelector(`.statistic__transport`);
     const timeSpendCtx = this._element.querySelector(`.statistic__time-spend`);
-
-    const stats = this.getStats(getTripPoints());
 
     const BAR_HEIGHT = 55;
 
@@ -65,7 +70,7 @@ export class Stats extends Component {
     timeConfig.options.title.text = `TIME SPENT`;
     timeConfig.data.labels = Object.keys(stats.time);
     timeConfig.data.datasets[0].data = Object.values(stats.time);
-    timeConfig.options.plugins.datalabels.formatter = (val) => `${val} min`;
+    timeConfig.options.plugins.datalabels.formatter = (val) => `${val} hrs`;
     timeSpendCtx.height = BAR_HEIGHT * timeConfig.data.labels.length;
     this.timeChart = new Chart(timeSpendCtx, timeConfig);
   }

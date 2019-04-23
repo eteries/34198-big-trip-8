@@ -26,21 +26,8 @@ export const formatDuration = (date0, date1) => {
           ${`${minutes}m`}`;
 };
 
-export const formatTime = (date) => {
-  const hours = new Date(date).getHours();
-  let minutes = new Date(date).getMinutes();
-
-  if (minutes < 10) {
-    minutes = `0` + minutes;
-  }
-
-  return `${hours}:${minutes}`;
-};
-
 export const createElement = (templateString) => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = templateString.trim();
   return newElement.firstChild;
 };
-
-export const makeIdFromTitle = (title) => title.split(` `).join(`-`).toLowerCase();
