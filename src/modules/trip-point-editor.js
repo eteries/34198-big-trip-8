@@ -117,9 +117,6 @@ export class TripPointEditor extends Component {
     }
 
     this.update(newData);
-    const a = ModelServerPoint.parsePoint(newData);
-    console.log(newData);
-    console.log(a);
 
   }
 

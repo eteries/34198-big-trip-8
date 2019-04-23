@@ -5,7 +5,7 @@ export const tripPointTypes = [
     `transport`,
     `drive`,
     `flight`],
-  [`checkIn`,
+  [`check-in`,
     `sightseeing`,
     `restaurant`]
 ];

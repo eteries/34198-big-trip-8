@@ -1,6 +1,8 @@
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
+import {api} from '../main';
+import {ModelServerPoint} from './common/model-server-point';
 
 export class TripPoints extends Component {
   constructor(points) {
@@ -45,19 +47,15 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
-      point.id = newTripPoint.id;
-      point.type = newTripPoint.type;
-      point.destination = newTripPoint.destination;
-      point.offers = newTripPoint.offers;
-      point.dateStart = newTripPoint.dateStart;
-      point.dateEnd = newTripPoint.dateEnd;
-      point.cost = newTripPoint.cost;
-
-      tripPointComponent.update(point);
-
-      tripPointComponent.create();
-      container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
-      tripPointEditorComponent.destroy();
+      api.updateTripPoint({id: newTripPoint.id, data: ModelServerPoint.parsePoint(newTripPoint)})
+        .then(() => api.getTripPoints())
+        .then((points) => {
+          const loaded = points.find((item) => item.id === newTripPoint.id);
+          tripPointComponent.update(loaded);
+          tripPointComponent.create();
+          container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
+          tripPointEditorComponent.destroy();
+        });
     };
 
     tripPointEditorComponent.onDelete = () => {
