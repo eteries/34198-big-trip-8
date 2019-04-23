@@ -13,7 +13,6 @@ export class Trip extends Component {
 
     api.getTripPoints()
       .then((points) => {
-        console.log(points)
         const tripPoints = new TripPoints(points);
         document.querySelector(`.main`).appendChild(tripPoints.create());
       });

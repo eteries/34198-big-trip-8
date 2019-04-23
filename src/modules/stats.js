@@ -2,10 +2,9 @@ import {Component} from './common/component';
 import {config} from './common/chart-default-config';
 import Chart from 'chart.js';
 import * as cloneDeep from 'lodash.clonedeep';
-import {getTripPoints, tripPointTypes} from '../data';
+import {tripPointTypes} from '../data';
 import * as moment from 'moment';
 import {api} from '../main';
-import {TripPoints} from './trip-points';
 
 const types = [`money`, `transport`, `time-spend`];
 

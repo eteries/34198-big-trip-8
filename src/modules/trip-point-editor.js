@@ -1,10 +1,11 @@
 import {prepareIconString} from './icons';
-import {collectPictures, tripPointTypes} from '../data';
+import {tripPointTypes} from '../data';
 import {Component} from './common/component';
 import {api} from '../main';
 
 import flatpickr from 'flatpickr';
 import moment from 'moment';
+import {ModelServerPoint} from './common/model-server-point';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -14,6 +15,7 @@ export class TripPointEditor extends Component {
     this._dateEnd = tripPoint.dateEnd;
     this._destination = tripPoint.destination;
     this._cost = tripPoint.cost;
+    this._id = tripPoint.id;
     this._type = tripPoint.type;
     this._offers = tripPoint.offers;
     this._isFavorite = tripPoint.isFavorite;
@@ -115,6 +117,10 @@ export class TripPointEditor extends Component {
     }
 
     this.update(newData);
+    const a = ModelServerPoint.parsePoint(newData);
+    console.log(newData);
+    console.log(a);
+
   }
 
   _onDeleteBtnClick(event) {
@@ -176,6 +182,7 @@ export class TripPointEditor extends Component {
       }
     }
 
+    entry.id = this._id;
     entry.offers = this._offers;
     entry.destination = this._destination;
 
@@ -183,6 +190,7 @@ export class TripPointEditor extends Component {
   }
 
   update(data) {
+    this._id = data.id;
     this._type = data.type;
     this._destination = data.destination;
     this._offers = data.offers;

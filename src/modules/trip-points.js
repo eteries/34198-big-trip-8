@@ -45,6 +45,7 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
+      point.id = newTripPoint.id;
       point.type = newTripPoint.type;
       point.destination = newTripPoint.destination;
       point.offers = newTripPoint.offers;
