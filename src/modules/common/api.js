@@ -44,6 +44,15 @@ export const API = class {
       .then(toJSON);
   }
 
+  getDestinationInfo(destination) {
+    return this._load({url: `points`})
+      .then(toJSON)
+      .then((points) => {
+        const found = points.find((point) => point.destination.name === destination);
+        return found ? found.destination : null;
+      });
+  }
+
   createTripPoint({tripPoint}) {
     return this._load({
       url: `points`,

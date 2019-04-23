@@ -23,52 +23,14 @@ export class TripPointEditor extends Component {
     this._onSubmit = null;
     this._onDelete = null;
 
-    api.getAvailableOffers()
-      .then((allOffers) => {
-        this._offers = allOffers.find((offers) => offers.type === this._type)
-          .offers
-          .map((offer) => ({
-            title: offer.name,
-            price: offer.price,
-            accepted: Boolean(this._offers.find((current) => {
-              return (current.title === offer.name) && current.accepted
-            }))
-          }));
-      });
-
-    api.getAvailableDestinations()
-      .then((destinations) => {
-        this._destinationString = destinations
-          .map((destination) => `
-            <option value="${destination.name}"></option>
-          `)
-          .join(``);
-      });
+    this._loadOffers();
+    this._loadDestinations();
 
     this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
-
-    this._onSaveBtnClick = (event) => {
-      event.preventDefault();
-
-      const formData = new FormData(this._element.querySelector(`form`));
-      const newData = this._processForm(formData);
-
-      if (typeof this._onSubmit === `function`) {
-        this._onSubmit(newData);
-      }
-
-      this.update(newData);
-    };
-
-    this._onDeleteBtnClick = (event) => {
-      event.preventDefault();
-
-      if (typeof this._onDelete === `function`) {
-        this._onDelete();
-      }
-    };
-
     this._onSelectOffer = this._onSelectOffer.bind(this);
+    this._onDeleteBtnClick = this._onDeleteBtnClick.bind(this);
+    this._onSaveBtnClick = this._onSaveBtnClick.bind(this);
+    this._onDestinationChange = this._onDestinationChange.bind(this);
   }
 
   attachEventListeners() {
@@ -102,6 +64,9 @@ export class TripPointEditor extends Component {
 
     this._element.querySelector(`.point__offers-wrap`)
       .addEventListener(`change`, this._onSelectOffer);
+
+    this._element.querySelector(`.point__destination-input`)
+      .addEventListener(`change`, this._onDestinationChange);
   }
 
   detachEventListeners() {
@@ -117,16 +82,19 @@ export class TripPointEditor extends Component {
     this._element.querySelector(`.point__offers-wrap`)
       .removeEventListener(`change`, this._onSelectOffer);
 
+    this._element.querySelector(`.point__destination-input`)
+      .removeEventListener(`change`, this._onDestinationChange);
+
     this.datepicker.destroy();
   }
 
   _onClickInsideMenu() {
     this._type = this._element.querySelector(`[name=type]:checked`).value;
     this._element.querySelector(`.travel-way__toggle`).checked = false;
-    this.detachEventListeners();
-    this._partialUpdate();
-    this.attachEventListeners();
-    [...this._element.querySelectorAll(`[name=type]`)].find((elem) => elem.value === this._type).checked = true;
+    this._loadOffers()
+      .then(() => {
+        this._partialUpdate();
+      });
   }
 
   _onSelectOffer(event) {
@@ -134,6 +102,40 @@ export class TripPointEditor extends Component {
     if (selected) {
       selected.accepted = !selected.accepted;
     }
+  }
+
+  _onSaveBtnClick(event) {
+    event.preventDefault();
+
+    const formData = new FormData(this._element.querySelector(`form`));
+    const newData = this._processForm(formData);
+
+    if (typeof this._onSubmit === `function`) {
+      this._onSubmit(newData);
+    }
+
+    this.update(newData);
+  }
+
+  _onDeleteBtnClick(event) {
+    event.preventDefault();
+
+    if (typeof this._onDelete === `function`) {
+      this._onDelete();
+    }
+  }
+
+  _onDestinationChange(event) {
+    api.getDestinationInfo(event.target.value)
+      .then((destination) => {
+        if (destination) {
+          this._destination = destination;
+        } else {
+          console.error(`the destination not found`);
+        }
+
+        this._partialUpdate();
+      });
   }
 
   set onSubmit(fn) {
@@ -145,8 +147,11 @@ export class TripPointEditor extends Component {
   }
 
   _partialUpdate() {
+    this.detachEventListeners();
     this._element.innerHTML = this.template;
     this.appendChildren();
+    this.attachEventListeners();
+    [...this._element.querySelectorAll(`[name=type]`)].find((elem) => elem.value === this._type).checked = true;
   }
 
   _processForm(formData) {
@@ -172,6 +177,7 @@ export class TripPointEditor extends Component {
     }
 
     entry.offers = this._offers;
+    entry.destination = this._destination;
 
     return entry;
   }
@@ -190,9 +196,6 @@ export class TripPointEditor extends Component {
     return {
       type: (value) => {
         target.type = value;
-      },
-      destination: (value) => {
-        target.destination = value;
       },
       price: (value) => {
         target.cost = value;
@@ -215,6 +218,32 @@ export class TripPointEditor extends Component {
     if (select) {
       select.insertAdjacentHTML(`beforeEnd`, this._destinationString);
     }
+  }
+
+  _loadOffers() {
+    return api.getAvailableOffers()
+      .then((allOffers) => {
+        this._offers = allOffers.find((offers) => offers.type === this._type)
+          .offers
+          .map((offer) => ({
+            title: offer.name,
+            price: offer.price,
+            accepted: Boolean(this._offers.find((current) => {
+              return (current.title === offer.name) && current.accepted;
+            }))
+          }));
+      });
+  }
+
+  _loadDestinations() {
+    return api.getAvailableDestinations()
+      .then((destinations) => {
+        this._destinationString = destinations
+          .map((destination) => `
+            <option value="${destination.name}"></option>
+          `)
+          .join(``);
+      });
   }
 
   get template() {
@@ -294,8 +323,8 @@ export class TripPointEditor extends Component {
               <h3 class="point__details-title">Destination</h3>
               <p class="point__destination-text">${this._destination.description}</p>
               <div class="point__destination-images">
-                ${collectPictures().map((src) => `
-                  <img src="${src}" alt="picture from place" class="point__destination-image">
+                ${this._destination.pictures && this._destination.pictures.map((picture) => `
+                  <img src="${picture.src}" alt="${picture.description}" class="point__destination-image">
                 `).join(``)}
               </div>
             </section>
