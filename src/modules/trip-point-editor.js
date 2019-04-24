@@ -5,7 +5,6 @@ import {api} from '../main';
 
 import flatpickr from 'flatpickr';
 import moment from 'moment';
-import {ModelServerPoint} from './common/model-server-point';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -21,18 +20,21 @@ export class TripPointEditor extends Component {
     this._isFavorite = tripPoint.isFavorite;
 
     this.datepicker = null;
+    this._destinationsInfo = [];
 
     this._onSubmit = null;
     this._onDelete = null;
 
     this._loadOffers();
     this._loadDestinations();
+    this._loadDestinationsInfo();
 
     this._onClickInsideMenu = this._onClickInsideMenu.bind(this);
     this._onSelectOffer = this._onSelectOffer.bind(this);
     this._onDeleteBtnClick = this._onDeleteBtnClick.bind(this);
     this._onSaveBtnClick = this._onSaveBtnClick.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
+    this._loadDestinationsInfo = this._loadDestinationsInfo.bind(this);
   }
 
   attachEventListeners() {
@@ -129,16 +131,18 @@ export class TripPointEditor extends Component {
   }
 
   _onDestinationChange(event) {
-    api.getDestinationInfo(event.target.value)
-      .then((destination) => {
-        if (destination) {
-          this._destination = destination;
-        } else {
-          console.error(`the destination not found`);
-        }
+    const newDestination = event.target.value && event.target.value.trim();
+    if (!newDestination) {
+      event.target.value = this._destination.name;
+      return;
+    }
 
-        this._partialUpdate();
-      });
+    const found = this._destinationsInfo.find((point) => point.name === newDestination);
+    if (!found) {
+      return;
+    }
+    this._destination = found;
+    this._partialUpdate();
   }
 
   set onSubmit(fn) {
@@ -248,6 +252,13 @@ export class TripPointEditor extends Component {
             <option value="${destination.name}"></option>
           `)
           .join(``);
+      });
+  }
+
+  _loadDestinationsInfo() {
+    return api.getAvailableDestinations()
+      .then((destinations) => {
+        this._destinationsInfo = destinations;
       });
   }
 

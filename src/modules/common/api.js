@@ -44,13 +44,10 @@ export const API = class {
       .then(toJSON);
   }
 
-  getDestinationInfo(destination) {
+  getDestinationsInfo() {
     return this._load({url: `points`})
       .then(toJSON)
-      .then((points) => {
-        const found = points.find((point) => point.destination.name === destination);
-        return found ? found.destination : null;
-      });
+      .then((points) => points.reduce((acc, point) => acc.push(point.destination), []));
   }
 
   createTripPoint({tripPoint}) {

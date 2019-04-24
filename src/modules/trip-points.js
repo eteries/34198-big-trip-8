@@ -59,9 +59,12 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onDelete = () => {
-      this.tripPointsAll[point.id] = null;
-      container.removeChild(tripPointEditorComponent.element);
-      tripPointEditorComponent.destroy();
+      api.deleteTripPoint({id: point.id})
+        .then(() => {
+          this.tripPointsAll[point.id] = null;
+          container.removeChild(tripPointEditorComponent.element);
+          tripPointEditorComponent.destroy();
+        });
     };
   }
 
