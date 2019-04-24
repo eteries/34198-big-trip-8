@@ -47,23 +47,31 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
+      tripPointEditorComponent.lockForm();
       api.updateTripPoint({id: newTripPoint.id, data: ModelServerPoint.parsePoint(newTripPoint)})
         .then(() => api.getTripPoints())
         .then((points) => {
-          const loaded = points.find((item) => item.id === newTripPoint.id);
-          tripPointComponent.update(loaded);
+          const remotePoints = points.find((item) => item.id === newTripPoint.id);
+          tripPointComponent.update(remotePoints);
           tripPointComponent.create();
           container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
           tripPointEditorComponent.destroy();
+        })
+        .catch(() => {
+          tripPointEditorComponent.unlockFormWithWarning();
         });
     };
 
     tripPointEditorComponent.onDelete = () => {
+      tripPointEditorComponent.lockForm();
       api.deleteTripPoint({id: point.id})
         .then(() => {
           this.tripPointsAll[point.id] = null;
           container.removeChild(tripPointEditorComponent.element);
           tripPointEditorComponent.destroy();
+        })
+        .catch(() => {
+          tripPointEditorComponent.unlockFormWithWarning();
         });
     };
   }
@@ -97,7 +105,26 @@ export class TripPoints extends Component {
           </article>
     
           <div class="trip-day__items"></div>
-        </section>
+        </section>        
+        <style>
+          @keyframes shake {
+            0%,
+            100% {
+              transform: translateX(0);
+            }
+        
+            10%, 30%, 50%, 70%, 90% {
+              transform: translateX(-5px);
+            }
+        
+            20%, 40%, 60%, 80% {
+              transform: translateX(5px);
+            }
+          }
+          .shake {
+            animation: shake 0.6s;
+          }
+        </style>
       </section>
     `;
   }

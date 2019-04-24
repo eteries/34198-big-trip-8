@@ -262,6 +262,31 @@ export class TripPointEditor extends Component {
       });
   }
 
+  lockForm() {
+    this._element.style.pointerEvents = `none`;
+    this._element.style.opacity = 0.7;
+    this._element.querySelector(`.point__button--save`).innerText = `Saving...`;
+  }
+
+  unlockForm() {
+    this._element.style.pointerEvents = `all`;
+    this._element.style.opacity = 1;
+    this._element.querySelector(`.point__button--save`).innerText = `Save`;
+  }
+
+  unlockFormWithWarning() {
+    this.unlockForm();
+    this._element.classList.add(`shake`);
+    this._element.style.borderColor = `red`;
+    this._element.style.borderStyle = `solid`;
+    this._element.style.borderWidth = `1px`;
+
+    setTimeout(() => {
+      this._element.classList.remove(`shake`);
+      this._element.style.borderStyle = `none`;
+    }, 1000);
+  }
+
   get template() {
     return `
       <article class="point">
@@ -348,7 +373,6 @@ export class TripPointEditor extends Component {
           </section>
         </form>
       </article>
-
 `;
   }
 }
