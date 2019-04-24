@@ -1,15 +1,15 @@
 const icons = {
-  trip: `🚗`,
-  taxi: `🚕`,
-  bus: `🚌`,
-  train: `🚂`,
-  ship: `🛳️`,
-  transport: `🚊`,
-  drive: `🚗`,
-  flight: `✈`,
-  checkIn: `🏨`,
-  sightseeing: `🏛️`,
-  restaurant: `🍴`
+  'trip': `🚗`,
+  'taxi': `🚕`,
+  'bus': `🚌`,
+  'train': `🚂`,
+  'ship': `🚢`,
+  'transport': `🚊`,
+  'drive': `🚗`,
+  'flight': `✈`,
+  'check-in': `🏨`,
+  'sightseeing': `📷`,
+  'restaurant': `🍴`
 };
 
 export const prepareIconString = (key) => {

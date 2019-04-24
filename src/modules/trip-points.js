@@ -1,14 +1,15 @@
-import {getTripPoints} from '../data';
 import {TripPoint} from './trip-point';
 import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
+import {api} from '../main';
+import {ModelServerPoint} from './common/model-server-point';
 
 export class TripPoints extends Component {
-  constructor() {
+  constructor(points) {
     super();
 
-    this.tripPointsAll = getTripPoints();
-    this.tripPointsVisible = this.tripPointsAll;
+    this.tripPointsAll = points;
+    this.tripPointsVisible = points;
 
     this._onFilter = (event) => {
       this._filterPoints(event.target.id);
@@ -32,7 +33,7 @@ export class TripPoints extends Component {
     this.tripPointsVisible.forEach((item, index) => this._addPoint(item, index));
   }
 
-  _addPoint(point, index) {
+  _addPoint(point) {
     const tripPointComponent = new TripPoint(point);
     const tripPointEditorComponent = new TripPointEditor(point);
 
@@ -46,23 +47,32 @@ export class TripPoints extends Component {
     };
 
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
-      point.type = newTripPoint.type;
-      point.destination = newTripPoint.destination;
-      point.offers = newTripPoint.selectedOffers;
-      point.dateStart = newTripPoint.dateStart;
-      point.cost = newTripPoint.cost;
-
-      tripPointComponent.update(point);
-
-      tripPointComponent.create();
-      container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
-      tripPointEditorComponent.destroy();
+      tripPointEditorComponent.lockForm();
+      api.updateTripPoint({id: newTripPoint.id, data: ModelServerPoint.parsePoint(newTripPoint)})
+        .then(() => api.getTripPoints())
+        .then((points) => {
+          const remotePoints = points.find((item) => item.id === newTripPoint.id);
+          tripPointComponent.update(remotePoints);
+          tripPointComponent.create();
+          container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
+          tripPointEditorComponent.destroy();
+        })
+        .catch(() => {
+          tripPointEditorComponent.unlockFormWithWarning();
+        });
     };
 
     tripPointEditorComponent.onDelete = () => {
-      this.tripPointsAll[index] = null;
-      container.removeChild(tripPointEditorComponent.element);
-      tripPointEditorComponent.destroy();
+      tripPointEditorComponent.lockForm();
+      api.deleteTripPoint({id: point.id})
+        .then(() => {
+          this.tripPointsAll[point.id] = null;
+          container.removeChild(tripPointEditorComponent.element);
+          tripPointEditorComponent.destroy();
+        })
+        .catch(() => {
+          tripPointEditorComponent.unlockFormWithWarning();
+        });
     };
   }
 
@@ -74,12 +84,12 @@ export class TripPoints extends Component {
 
       case `filter-future`:
         this.tripPointsVisible = this.tripPointsAll
-          .filter((point) => point.dateStart[0] > Date.now());
+          .filter((point) => point.dateStart > Date.now());
         break;
 
       case `filter-past`:
         this.tripPointsVisible = this.tripPointsAll
-          .filter((point) => point.dateStart[1] < Date.now());
+          .filter((point) => point.dateEnd < Date.now());
         break;
     }
   }
@@ -95,7 +105,26 @@ export class TripPoints extends Component {
           </article>
     
           <div class="trip-day__items"></div>
-        </section>
+        </section>        
+        <style>
+          @keyframes shake {
+            0%,
+            100% {
+              transform: translateX(0);
+            }
+        
+            10%, 30%, 50%, 70%, 90% {
+              transform: translateX(-5px);
+            }
+        
+            20%, 40%, 60%, 80% {
+              transform: translateX(5px);
+            }
+          }
+          .shake {
+            animation: shake 0.6s;
+          }
+        </style>
       </section>
     `;
   }
