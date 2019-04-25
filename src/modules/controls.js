@@ -11,11 +11,13 @@ export class Controls extends Component {
   attachEventListeners() {
     this._element.querySelector(`[href$=table]`).addEventListener(`click`, this._onTableClick);
     this._element.querySelector(`[href$=stats]`).addEventListener(`click`, this._onStatsClick);
+    this._element.querySelector(`.new-event`).addEventListener(`click`, this._onNewBtnClick);
   }
 
   detachEventListeners() {
     this._element.removeEventListener(`click`, this._onTableClick);
     this._element.removeEventListener(`click`, this._onStatsClick);
+    this._element.querySelector(`.new-event`).addEventListener(`click`, this._onNewBtnClick);
   }
 
   _onTableClick(event) {
@@ -25,6 +27,12 @@ export class Controls extends Component {
   }
 
   _onStatsClick(event) {
+    event.preventDefault();
+    main.classList.add(`visually-hidden`);
+    stats.classList.remove(`visually-hidden`);
+  }
+
+  _onNewBtnClick(event) {
     event.preventDefault();
     main.classList.add(`visually-hidden`);
     stats.classList.remove(`visually-hidden`);
