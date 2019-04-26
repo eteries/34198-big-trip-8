@@ -21,6 +21,7 @@ export class TripPointEditor extends Component {
 
     this.datepicker = null;
     this._destinationsInfo = [];
+    this._destinationString = ``;
 
     this._onSubmit = null;
     this._onDelete = null;
@@ -224,6 +225,7 @@ export class TripPointEditor extends Component {
   appendChildren() {
     super.appendChildren();
     const select = this._element.querySelector(`#destination-select`);
+    debugger
     if (select) {
       select.insertAdjacentHTML(`beforeEnd`, this._destinationString);
     }
@@ -318,9 +320,7 @@ export class TripPointEditor extends Component {
             <div class="point__destination-wrap">
               <label class="point__destination-label" for="destination">${this._type} to </label>
               <input class="point__destination-input" list="destination-select" id="destination" value="${this._destination.name}" name="destination">
-              <datalist id="destination-select">
-                  
-              </datalist>
+              <datalist id="destination-select"></datalist>
             </div>
             
             <div class="point__time">

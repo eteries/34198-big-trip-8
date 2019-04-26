@@ -3,6 +3,7 @@ import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
 import {api} from '../main';
 import {ModelServerPoint} from './common/model-server-point';
+import {tripPointTypes} from '../data';
 
 export class TripPoints extends Component {
   constructor(points) {
@@ -10,6 +11,8 @@ export class TripPoints extends Component {
 
     this.tripPointsAll = points;
     this.tripPointsVisible = points;
+
+    this._onNewBtnClick = this._onNewBtnClick.bind(this);
 
     this._onFilter = (event) => {
       this._filterPoints(event.target.id);
@@ -19,14 +22,39 @@ export class TripPoints extends Component {
     };
   }
 
+  _createNewPoint() {
+    const newPoint = {
+      id: this.tripPointsAll.length,
+      type: tripPointTypes[0][0],
+      destination: {
+        name: `Oslo`
+      },
+      dateStart: ``,
+      dateEnd: ``,
+      offers: [],
+      cost: 0,
+      isFavorite: false
+    };
+    this.tripPointsAll.push(newPoint);
+    const components = this._addPoint(newPoint);
+    components.tripPointEditorComponent.create();
+    components.tripPointComponent.element.parentElement.replaceChild(components.tripPointEditorComponent.element, components.tripPointComponent.element);
+    components.tripPointEditorComponent.element.scrollIntoView();
+    components.tripPointComponent.destroy();
+  }
+
   attachEventListeners() {
     document.querySelector(`.trip-filter`)
       .addEventListener(`change`, this._onFilter);
+    document.querySelector(`.new-event`)
+      .addEventListener(`click`, this._onNewBtnClick);
   }
 
   detachEventListeners() {
     document.querySelector(`.trip-filter`)
       .removeEventListener(`change`, this._onFilter);
+    document.querySelector(`.new-event`)
+      .removeEventListener(`click`, this._onNewBtnClick);
   }
 
   appendChildren() {
@@ -74,6 +102,11 @@ export class TripPoints extends Component {
           tripPointEditorComponent.unlockFormWithWarning();
         });
     };
+
+    return {
+      tripPointComponent,
+      tripPointEditorComponent
+    };
   }
 
   _filterPoints(filterName) {
@@ -92,6 +125,11 @@ export class TripPoints extends Component {
           .filter((point) => point.dateEnd < Date.now());
         break;
     }
+  }
+
+  _onNewBtnClick(event) {
+    event.preventDefault();
+    this._createNewPoint();
   }
 
   get template() {
