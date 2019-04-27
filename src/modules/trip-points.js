@@ -3,6 +3,7 @@ import {TripPointEditor} from './trip-point-editor';
 import {Component} from './common/component';
 import {api} from '../main';
 import {ModelServerPoint} from './common/model-server-point';
+import moment from 'moment';
 import {tripPointTypes} from '../data';
 
 export class TripPoints extends Component {
@@ -16,6 +17,13 @@ export class TripPoints extends Component {
 
     this._onFilter = (event) => {
       this._filterPoints(event.target.id);
+      const container = this._element.querySelector(`.trip-day__items`);
+      container.innerHTML = ``;
+      this.appendChildren();
+    };
+
+    this._onSort = (event) => {
+      this._sortPoints(event.target.id);
       const container = this._element.querySelector(`.trip-day__items`);
       container.innerHTML = ``;
       this.appendChildren();
@@ -46,6 +54,8 @@ export class TripPoints extends Component {
   attachEventListeners() {
     document.querySelector(`.trip-filter`)
       .addEventListener(`change`, this._onFilter);
+    document.querySelector(`.trip-sorting`)
+      .addEventListener(`change`, this._onSort);
     document.querySelector(`.new-event`)
       .addEventListener(`click`, this._onNewBtnClick);
   }
@@ -53,6 +63,8 @@ export class TripPoints extends Component {
   detachEventListeners() {
     document.querySelector(`.trip-filter`)
       .removeEventListener(`change`, this._onFilter);
+    document.querySelector(`.trip-sorting`)
+      .removeEventListener(`change`, this._onSort);
     document.querySelector(`.new-event`)
       .removeEventListener(`click`, this._onNewBtnClick);
   }
@@ -123,6 +135,28 @@ export class TripPoints extends Component {
       case `filter-past`:
         this.tripPointsVisible = this.tripPointsAll
           .filter((point) => point.dateEnd < Date.now());
+        break;
+    }
+  }
+
+  _sortPoints(sortName) {
+    switch (sortName) {
+      case `sorting-event`:
+        this.tripPointsVisible = this.tripPointsAll;
+        break;
+
+      case `sorting-time`:
+        this.tripPointsVisible.sort((point1, point2) => {
+          const duration1 = moment.duration(moment(point1.dateEnd) - moment(point1.dateStart)).asMilliseconds();
+          const duration2 = moment.duration(moment(point2.dateEnd) - moment(point2.dateStart)).asMilliseconds();
+          return duration1 < duration2 ? 1 : -1;
+        });
+        break;
+
+      case `sorting-price`:
+        this.tripPointsVisible.sort((point1, point2) => {
+          return point1.cost < point2.cost ? 1 : -1;
+        });
         break;
     }
   }
