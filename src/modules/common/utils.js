@@ -11,6 +11,8 @@ const shuffle = (arr) => {
   return arr;
 };
 
+const ESCAPE_CODE = 27;
+
 export const spliceRandom = (arr, max) => shuffle([...arr]).splice(0, 1 + getRandomInteger(max - 1));
 
 export const extractRandomSentences = (text, max) => spliceRandom(text.split(`. `), max).join(` .`);
@@ -31,3 +33,5 @@ export const createElement = (templateString) => {
   newElement.innerHTML = templateString.trim();
   return newElement.firstChild;
 };
+
+export const isEscape = (event) => event.keyCode && event.keyCode === ESCAPE_CODE;

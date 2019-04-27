@@ -86,6 +86,12 @@ export class TripPoints extends Component {
       tripPointComponent.destroy();
     };
 
+    tripPointEditorComponent.onClose = () => {
+      tripPointComponent.create();
+      container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
+      tripPointEditorComponent.destroy();
+    };
+
     tripPointEditorComponent.onSubmit = (newTripPoint) => {
       tripPointEditorComponent.lockForm();
       api.updateTripPoint({id: newTripPoint.id, data: ModelServerPoint.parsePoint(newTripPoint)})

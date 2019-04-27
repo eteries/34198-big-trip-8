@@ -5,6 +5,7 @@ import {api} from '../main';
 
 import flatpickr from 'flatpickr';
 import moment from 'moment';
+import {isEscape} from './common/utils';
 
 export class TripPointEditor extends Component {
   constructor(tripPoint) {
@@ -25,6 +26,7 @@ export class TripPointEditor extends Component {
 
     this._onSubmit = null;
     this._onDelete = null;
+    this._onClose = null;
 
     this._loadOffers();
     this._loadDestinations();
@@ -34,6 +36,7 @@ export class TripPointEditor extends Component {
     this._onSelectOffer = this._onSelectOffer.bind(this);
     this._onDeleteBtnClick = this._onDeleteBtnClick.bind(this);
     this._onSaveBtnClick = this._onSaveBtnClick.bind(this);
+    this._onKeyDown = this._onKeyDown.bind(this);
     this._onDestinationChange = this._onDestinationChange.bind(this);
     this._loadDestinationsInfo = this._loadDestinationsInfo.bind(this);
   }
@@ -43,6 +46,17 @@ export class TripPointEditor extends Component {
       .addEventListener(`click`, this._onSaveBtnClick);
     this._element.querySelector(`.point__button--delete`)
       .addEventListener(`click`, this._onDeleteBtnClick);
+
+    this._element.querySelector(`.travel-way__select`)
+      .addEventListener(`change`, this._onClickInsideMenu);
+
+    this._element.querySelector(`.point__offers-wrap`)
+      .addEventListener(`change`, this._onSelectOffer);
+
+    this._element.querySelector(`.point__destination-input`)
+      .addEventListener(`change`, this._onDestinationChange);
+
+    document.addEventListener(`keydown`, this._onKeyDown);
 
     this.datepicker = flatpickr(
         this._element.querySelector(`[name="dateStart"]`),
@@ -63,15 +77,6 @@ export class TripPointEditor extends Component {
           defaultDate: this._dateEnd
         }
     );
-
-    this._element.querySelector(`.travel-way__select`)
-      .addEventListener(`change`, this._onClickInsideMenu);
-
-    this._element.querySelector(`.point__offers-wrap`)
-      .addEventListener(`change`, this._onSelectOffer);
-
-    this._element.querySelector(`.point__destination-input`)
-      .addEventListener(`change`, this._onDestinationChange);
   }
 
   detachEventListeners() {
@@ -89,6 +94,9 @@ export class TripPointEditor extends Component {
 
     this._element.querySelector(`.point__destination-input`)
       .removeEventListener(`change`, this._onDestinationChange);
+
+    this._element.querySelector(`.point__destination-input`)
+      .addEventListener(`keydown`, this._onKeyDown);
 
     this.datepicker.destroy();
   }
@@ -120,7 +128,6 @@ export class TripPointEditor extends Component {
     }
 
     this.update(newData);
-
   }
 
   _onDeleteBtnClick(event) {
@@ -146,12 +153,28 @@ export class TripPointEditor extends Component {
     this._partialUpdate();
   }
 
+  _onKeyDown(event) {
+    if (isEscape(event)) {
+      this._close();
+    }
+  }
+
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
 
   set onDelete(fn) {
     this._onDelete = fn;
+  }
+
+  set onClose(fn) {
+    this._onClose = fn;
+  }
+
+  _close() {
+    if (typeof this._onClose === `function` && this._element) {
+      this._onClose();
+    }
   }
 
   _partialUpdate() {
@@ -225,7 +248,6 @@ export class TripPointEditor extends Component {
   appendChildren() {
     super.appendChildren();
     const select = this._element.querySelector(`#destination-select`);
-    debugger
     if (select) {
       select.insertAdjacentHTML(`beforeEnd`, this._destinationString);
     }
