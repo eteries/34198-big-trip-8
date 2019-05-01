@@ -2,6 +2,8 @@ import {prepareIconString} from './icons';
 import {TripPoints} from './trip-points';
 import {Component} from './common/component';
 import {api} from '../main';
+import {Cost} from './cost';
+import {ModelServerPoint} from './common/model-server-point';
 
 export class Trip extends Component {
   constructor(trip) {
@@ -9,9 +11,22 @@ export class Trip extends Component {
 
     this._title = trip.title;
     this._dates = trip.dates;
-    this._cost = trip.cost;
+
+    this._cost = new Cost();
+    this._costElement = this._cost.create();
 
     this._appendPoints();
+  }
+
+  appendChildren() {
+    this._element.appendChild(this._costElement);
+    this._cost.onUpdate = () => {
+      const newConst = new Cost();
+      const newConstElem = newConst.create();
+      this._element.parentElement.replaceChild(this._costElement, newConstElem);
+      this._cost = newConst;
+      this._costElement = newConstElem;
+    };
   }
 
   _appendPoints() {
@@ -33,8 +48,9 @@ export class Trip extends Component {
     return api.getTripPoints()
       .then((points) => {
         const tripPoints = new TripPoints(points);
-        targetElement.removeChild(loadingMessage);
         document.querySelector(`.main`).appendChild(tripPoints.create());
+        this._cost.update();
+        targetElement.removeChild(loadingMessage);
       })
       .catch(() => {
         targetElement.removeChild(loadingMessage);
@@ -50,7 +66,6 @@ export class Trip extends Component {
          <h1 class="trip__points">${this._title}</h1>
          <p class="trip__dates">${this._dates}</p>
       </div>
-      <p class="trip__total">Total: <span class="trip__total-cost">&euro;&nbsp;${this._cost}</span></p>
     </div>
     `;
   }

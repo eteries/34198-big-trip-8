@@ -246,7 +246,6 @@ export class TripPointEditor extends Component {
   }
 
   appendChildren() {
-    super.appendChildren();
     const select = this._element.querySelector(`#destination-select`);
     if (select) {
       select.insertAdjacentHTML(`beforeEnd`, this._destinationString);
