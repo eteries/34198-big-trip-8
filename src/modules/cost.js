@@ -1,18 +1,18 @@
 import {Component} from './common/component';
-import {api} from '../main';
-import {TripPoints} from './trip-points';
 
 export class Cost extends Component {
-  constructor() {
+  constructor(points) {
     super();
-    this._cost = 0;
-    this._getCost();
+    this._cost = Cost.calculateCost(points);
 
     this._onUpdate = null;
   }
 
-  _calculateCost(points) {
+  static calculateCost(points) {
     return points.reduce((acc, point) => {
+      if (!point) {
+        return acc;
+      }
       return acc + point.cost + point.offers.
         reduce((sum, offer) => {
           return offer.accepted ? sum + offer.price : sum;
@@ -20,19 +20,8 @@ export class Cost extends Component {
     }, 0);
   }
 
-  _getCost() {
-    return api.getTripPoints()
-      .then((points) => {
-        this._cost = this._calculateCost(points);
-        this.update();
-      })
-      .catch(() => {
-
-      });
-  }
-
-  update() {
-    this._onUpdate();
+  update(points) {
+    this._onUpdate(points);
   }
 
   set onUpdate(fn) {

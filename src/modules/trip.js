@@ -3,7 +3,6 @@ import {TripPoints} from './trip-points';
 import {Component} from './common/component';
 import {api} from '../main';
 import {Cost} from './cost';
-import {ModelServerPoint} from './common/model-server-point';
 
 export class Trip extends Component {
   constructor(trip) {
@@ -12,21 +11,22 @@ export class Trip extends Component {
     this._title = trip.title;
     this._dates = trip.dates;
 
-    this._cost = new Cost();
-    this._costElement = this._cost.create();
-
     this._appendPoints();
   }
 
-  appendChildren() {
-    this._element.appendChild(this._costElement);
-    this._cost.onUpdate = () => {
-      const newConst = new Cost();
-      const newConstElem = newConst.create();
-      this._element.parentElement.replaceChild(this._costElement, newConstElem);
-      this._cost = newConst;
-      this._costElement = newConstElem;
+  _appendCost(points) {
+    let cost = new Cost(points);
+    cost.create();
+    this._element.appendChild(cost.element);
+
+    cost.onUpdate = (newPoints) => {
+      const newCost = new Cost(newPoints);
+      newCost.create();
+      this._element.replaceChild(newCost.element, cost.element);
+      cost = newCost;
     };
+
+    return cost;
   }
 
   _appendPoints() {
@@ -47,9 +47,9 @@ export class Trip extends Component {
     targetElement.appendChild(loadingMessage);
     return api.getTripPoints()
       .then((points) => {
-        const tripPoints = new TripPoints(points);
+        const cost = this._appendCost(points);
+        const tripPoints = new TripPoints(points, cost);
         document.querySelector(`.main`).appendChild(tripPoints.create());
-        this._cost.update();
         targetElement.removeChild(loadingMessage);
       })
       .catch(() => {

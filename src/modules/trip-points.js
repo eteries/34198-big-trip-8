@@ -7,8 +7,10 @@ import moment from 'moment';
 import {tripPointTypes} from '../data';
 
 export class TripPoints extends Component {
-  constructor(points) {
+  constructor(points, cost) {
     super();
+
+    this._cost = cost;
 
     this.tripPointsAll = points;
     this.tripPointsVisible = points;
@@ -44,6 +46,8 @@ export class TripPoints extends Component {
       isFavorite: false
     };
     this.tripPointsAll.push(newPoint);
+    this._cost.update(this.tripPointsAll);
+
     const components = this._addPoint(newPoint);
     components.tripPointEditorComponent.create();
     components.tripPointComponent.element.parentElement.replaceChild(components.tripPointEditorComponent.element, components.tripPointComponent.element);
@@ -102,10 +106,12 @@ export class TripPoints extends Component {
           tripPointComponent.create();
           container.replaceChild(tripPointComponent.element, tripPointEditorComponent.element);
           tripPointEditorComponent.destroy();
+          return points;
         })
         .catch(() => {
           tripPointEditorComponent.unlockFormWithWarning();
-        });
+        })
+        .then((points)=> this._cost.update(points));
     };
 
     tripPointEditorComponent.onDelete = () => {
@@ -118,7 +124,8 @@ export class TripPoints extends Component {
         })
         .catch(() => {
           tripPointEditorComponent.unlockFormWithWarning();
-        });
+        })
+        .then(()=> this._cost.update(this.tripPointsAll));
     };
 
     return {

@@ -231,7 +231,7 @@ export class TripPointEditor extends Component {
         target.type = value;
       },
       price: (value) => {
-        target.cost = value;
+        target.cost = +value;
       },
       dateStart: (value) => {
         target.dateStart = moment(value).valueOf();
